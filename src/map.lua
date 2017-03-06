@@ -8,44 +8,47 @@ M.map.height = 0
 
 -- globalne predefinisane boje, da ustedimo memoriju (ne stavljamo na svaki chunk)
 M.color = {}
-M.color.r = 0
-M.color.g = 70
-M.color.b = 70
+M.color.r = 255
+M.color.g = 255
+M.color.b = 255
+M.color.a = 100
 
 M.const={}
 M.const.empty=0
 M.const.wall=1
 M.const.turret=2
 
+M.colorHover = {}
+M.colorHover.r = 0
+M.colorHover.g = 100
+M.colorHover.b = 200
+M.colorHover.a = 100
+turret={}
+turret.img = love.graphics.newImage("img/turret.png")
+background = {}
+background.img = love.graphics.newImage("img/sand.jpg")
+
 screen = {}
-screen.rescaled = true
+
+--update vars pri resize
 function M.updateSize()
-    if not screen.rescaled then
-        return
-    end
-    screen.rescaled = false
     screen.width = love.graphics.getWidth()
     screen.height = love.graphics.getHeight()
+    background.scalex = 1/(background.img:getWidth()/screen.width)
+    background.scaley = 1/(background.img:getHeight()/screen.height)
+    print(screen.width, screen.height)
+    print(background.scalex.." "..background.scaley)
     chunkW = screen.width / M.map.width
     chunkH = screen.height / M.map.height
     --kolko se slicica skalira. kada ubacimo resize ovo treba update
     --da ne bismo bas svaki frame za svaku kulu racunali
     turret.scalex=1/(turret.img:getWidth()/(chunkW-1)) -- minus 1 zbog ivice grida
-    turret.scaley=1/(turret.img:getHeight()/(chunkH-1))*1.5
+    turret.scaley=1/(turret.img:getHeight()/(chunkH-1))*1.5--TODO ulepsaj
 end
-turret={}
-turret.img = love.graphics.newImage("img/turret.png")
 
-
--- slicno za hover
-M.colorHover = {}
-M.colorHover.r = 0
-M.colorHover.g = 170
-M.colorHover.b = 170
 
 -- Generise praznu mapu
 -- postavlja chunkW i chunkH, sto je visina i sirina svakog pravougaonika
--- TODO screen width i height verovatno treba da se stave na neko globalnije mesto
 
 function M.generateEmpty(width,height)
     for i=1,width do
@@ -57,17 +60,15 @@ function M.generateEmpty(width,height)
             M.map[i][j].hover = false
         end
     end
-
     M.map.width = width
     M.map.height = height
+    M.updateSize()
 end
 
 -- Promeni boju chunka na hover
 -- moze matematicki da se izracuna u kom je polju, umesto for petlje
 -- mada nije mnogo bitno jer je mali grid
--- TODO akcija na klik, mozda razdvojiti u fje
 function M.mouse()
-    M.updateSize()
     mouseX, mouseY = love.mouse.getPosition()
     selectedX=-1
     selectedY=-1
@@ -87,16 +88,18 @@ function M.mouse()
 end
 
 -- Iscrtava mapu
+--TODO sredi donji deo turreta da se ne preklapa sa prozirnim
 function M.draw()
-    M.updateSize()
+    love.graphics.draw(background.img, 0, 0, 0, background.scalex, background.scaley )
     local highlight=255
     for i=1 , M.map.width do
         for j=1 , M.map.height do
 
             if M.map[i][j].hover == false then
-                love.graphics.setColor(M.color.r, M.color.g, M.color.b)
+                love.graphics.setColor(M.color.r, M.color.g, M.color.b, M.color.a)
             else
-                love.graphics.setColor(M.colorHover.r, M.colorHover.g, M.colorHover.b)
+                love.graphics.setColor(M.colorHover.r, M.colorHover.g,
+                    M.colorHover.b, M.colorHover.a)
             end
                 love.graphics.rectangle("fill", (i-1)*chunkW, (j-1)*chunkH, chunkW-1, chunkH-1)
 

@@ -5,14 +5,22 @@
 --kolko vidim kad se crta slicica mora da se postavi boja na
 --belu da bi lepo iscrtalo
 function love.load()
-	--ucitavanje modula map
-	map=require("map")
+	love.window.setTitle("Placeholder")
+	defaultWidth, defaultHeight = 800, 600
+	love.window.setMode( defaultWidth, defaultHeight )
 
+
+	--ucitavanje modula
+	map=require("map")
 	enemy=require("enemy")
 	map.generateEmpty(15,10)
+
 	--set mouse
 	love.mouse.setVisible(false)
   	mouseImg = love.graphics.newImage("img/mouse_cursor.png")
+	music = love.audio.newSource("img/music.mp3")
+	--music:play() --pod comm je da ne slusamo stalno dok pravimo
+	musicVolume = 1
 
 end
 
@@ -52,4 +60,32 @@ function updateKeyboard()
 	if love.keyboard.isDown("space") then
 		enemy.spawnCreeps()
 	end
+end
+
+--callbacks koje updateuju da li je dugme pritisnuto ili ne
+
+function love.keypressed( key )
+   if key == "w" then
+      text = "w is being pressed!"
+	  print(text)
+   end
+
+   if key == "m" then
+	   musicVolume = -musicVolume  + 1
+	   print(musicVolume)
+	   love.audio.setVolume(musicVolume)
+   end
+end
+
+function love.keyreleased( key )
+   if key == "w" then
+      text = "w has been released!"
+	  print(text)
+   end
+end
+
+--callback na resize
+function love.resize(w, h)
+  print(("Window resized to width: %d and height: %d."):format(w, h))
+  M.updateSize()
 end
