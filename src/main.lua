@@ -26,13 +26,15 @@ end
 
 function love.update(dt)
 	updateMouse()
-	updateKeyboard()
+--	updateKeyboard()
 end
-
 
 function love.draw()
 	map.draw()
 	enemy.drawCreeps()
+
+	enemy.targetEnemies()
+
 	drawMouse()
 end
 
@@ -44,30 +46,27 @@ end
 
 function updateMouse()
 	local x,y = map.mouse()
-	local down = love.mouse.isDown(1)
+	local leftClick = love.mouse.isDown(1)
 	--kliknuto x,y polje, postavi tu turret
-	if (down and x > 0 and y > 0 and map.map[x][y].val == map.const.empty) then
-		map.map[x][y].val = map.const.turret
+	if leftClick then --jer nema lenjog izracunavanja
+		if ( x > 0 and y > 0) then
+			map.newTurret(x, y)
+		end
+	end
+	local rightClick = love.mouse.isDown(2)
+	if rightClick then
+		if ( x > 0 and y > 0 ) then
+			map.removeTurret(x, y)
+		end
 	end
 end
 
-function updateKeyboard()
-	if love.keyboard.isDown("escape") then
-		love.event.quit()
-	end
-
-	--for testing
-	if love.keyboard.isDown("space") then
-		enemy.spawnCreeps()
-	end
-end
 
 --callbacks koje updateuju da li je dugme pritisnuto ili ne
 
 function love.keypressed( key )
-   if key == "w" then
-      text = "w is being pressed!"
-	  print(text)
+   if key == "w" or key == "s" or key == "a" or key == "d" then
+      enemy.moveCreeps(key)
    end
 
    if key == "m" then
@@ -75,12 +74,20 @@ function love.keypressed( key )
 	   print(musicVolume)
 	   love.audio.setVolume(musicVolume)
    end
+
+   if key == "escape" then
+	   love.event.quit()
+   end
+
+   --for testing
+   if key == "space" then
+	   enemy.spawnCreeps()
+   end
 end
 
 function love.keyreleased( key )
    if key == "w" then
-      text = "w has been released!"
-	  print(text)
+
    end
 end
 
@@ -88,4 +95,12 @@ end
 function love.resize(w, h)
   print(("Window resized to width: %d and height: %d."):format(w, h))
   M.updateSize()
+end
+
+function tableSize(tab)
+	c = 0
+	for k,v in pairs(tab) do
+		c = c + 1
+	end
+	return c
 end

@@ -23,7 +23,37 @@ M.colorHover.r = 0
 M.colorHover.g = 100
 M.colorHover.b = 200
 M.colorHover.a = 100
-turret={}
+
+function M.newTurret(i, j)
+    if map.map[i][j].val ~= map.const.empty then
+        return
+    end
+    M.map[i][j].val = M.const.turret
+    newTurret = {}
+    newTurret.hp = 100
+    newTurret.x = i
+    newTurret.y = j
+    table.insert(M.turrets, newTurret)
+    --print(tableSize(M.turrets))
+end
+
+function M.removeTurret(i, j)
+    if map.map[i][j].val ~= map.const.turret then
+        return
+    end
+    map.map[i][j].val = map.const.empty
+    for k, v in pairs(M.turrets) do
+        if v.x == i and v.y == j then
+            M.turrets[k] = nil --ovako se brise entry iz tabele
+        end
+    end
+    --print(tableSize(M.turrets))
+end
+--FIXME ? moja ideja je bila da se ovde cuvaju kule, da ne bi morala cela
+--matrica da se obilazi sa 2 for petlje da bismo imali spisak kula
+M.turrets = {}
+
+turret = {}
 turret.img = love.graphics.newImage("img/turret.png")
 background = {}
 background.img = love.graphics.newImage("img/sand.jpg")
@@ -55,6 +85,7 @@ function M.generateEmpty(width,height)
         M.map[i] = {}
         for j=1,height do
             M.map[i][j] = {}
+            --val je tip objekta
             M.map[i][j].val = M.const.empty
             --TODO umesto val nek ima .obj, a obj u sebi val
             M.map[i][j].hover = false
@@ -105,10 +136,10 @@ function M.draw()
 
             --draw turret
             if M.map[i][j].val == M.const.turret then
-                love.graphics.setColor(255,255,255)
+                love.graphics.setColor(220,220,255)
                 love.graphics.draw(turret.img,  (i-1)*chunkW, (j-1)*chunkH,
         --orientation, scale x,       scale y, offsetx, offsety
-                    0, turret.scalex, turret.scaley, 0, chunkH*0.5)
+                    0, turret.scalex, turret.scaley, 0, chunkH*0.68)
 
             end
         end
