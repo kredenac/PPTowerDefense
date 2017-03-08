@@ -6,18 +6,19 @@
 --belu da bi lepo iscrtalo
 function love.load()
 	love.window.setTitle("Placeholder")
-	defaultWidth, defaultHeight = 800, 600
+	defaultWidth, defaultHeight = 1024, 768
 	love.window.setMode( defaultWidth, defaultHeight )
 
-
 	--ucitavanje modula
-	map=require("map")
-	enemy=require("enemy")
-	map.generateEmpty(15,10)
+	gui = require("gui")
+	map = require("map")
+	enemy = require("enemy")
+
+	map.generateEmpty(19,10)
 
 	--set mouse
 	love.mouse.setVisible(false)
-  	mouseImg = love.graphics.newImage("img/mouse_cursor.png")
+	mouseImg = love.graphics.newImage("img/mouse_cursor.png")
 	music = love.audio.newSource("img/music.mp3")
 	--music:play() --pod comm je da ne slusamo stalno dok pravimo
 	musicVolume = 1
@@ -30,7 +31,8 @@ function love.update(dt)
 end
 
 function love.draw()
-	map.draw()
+	gui.draw()
+	map.draw(gui.topBarHeight)
 	enemy.drawCreeps()
 
 	enemy.targetEnemies()
@@ -45,6 +47,7 @@ function drawMouse()
 end
 
 function updateMouse()
+	gui.mouse()
 	local x,y = map.mouse()
 	local leftClick = love.mouse.isDown(1)
 	--kliknuto x,y polje, postavi tu turret
@@ -94,7 +97,7 @@ end
 --callback na resize
 function love.resize(w, h)
   print(("Window resized to width: %d and height: %d."):format(w, h))
-  M.updateSize()
+	M.updateSize()
 end
 
 function tableSize(tab)

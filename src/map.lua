@@ -61,9 +61,10 @@ background.img = love.graphics.newImage("img/sand.jpg")
 screen = {}
 
 --update vars pri resize
-function M.updateSize()
+function M.updateSize(topBar, bottomBar)
     screen.width = love.graphics.getWidth()
-    screen.height = love.graphics.getHeight()
+    --                                      topBar - bottomBar FIXME
+    screen.height = love.graphics.getHeight() - 50 - 150
     background.scalex = 1/(background.img:getWidth()/screen.width)
     background.scaley = 1/(background.img:getHeight()/screen.height)
     print(screen.width, screen.height)
@@ -105,8 +106,9 @@ function M.mouse()
     selectedY=-1
     for i=1 , M.map.width do
         for j=1 , M.map.height do
+            -- 50 zbog barHeight FIXME
             isx = mouseX > (i-1)*chunkW and mouseX < i*chunkW
-            isy = mouseY > (j-1)*chunkH and mouseY < j*chunkH
+            isy = mouseY > 50 + (j-1)*chunkH and mouseY < 50 + j*chunkH
             if isx and isy then
                 M.map[i][j].hover = true
                 selectedX, selectedY = i , j
@@ -121,7 +123,9 @@ end
 -- Iscrtava mapu
 --TODO sredi donji deo turreta da se ne preklapa sa prozirnim
 function M.draw()
-    love.graphics.draw(background.img, 0, 0, 0, background.scalex, background.scaley )
+    love.graphics.setColor(255, 255, 255, 255)
+                                      -- topBar FIXME
+    love.graphics.draw(background.img, 0, 50, 0, background.scalex, background.scaley )
     local highlight=255
     for i=1 , M.map.width do
         for j=1 , M.map.height do
@@ -132,14 +136,15 @@ function M.draw()
                 love.graphics.setColor(M.colorHover.r, M.colorHover.g,
                     M.colorHover.b, M.colorHover.a)
             end
-                love.graphics.rectangle("fill", (i-1)*chunkW, (j-1)*chunkH, chunkW-1, chunkH-1)
+                -- 50 je topBar height FIXME
+                love.graphics.rectangle("fill", (i-1)*chunkW, 50 + (j-1)*chunkH, chunkW-1, chunkH-1)
 
             --draw turret
             if M.map[i][j].val == M.const.turret then
                 love.graphics.setColor(220,220,255)
                 love.graphics.draw(turret.img,  (i-1)*chunkW, (j-1)*chunkH,
-        --orientation, scale x,       scale y, offsetx, offsety
-                    0, turret.scalex, turret.scaley, 0, chunkH*0.68)
+        --orientation, scale x,       scale y, offsetx, offsety FIXME offset ume da zeza
+                    0, turret.scalex, turret.scaley, 0, -chunkH*0.4/turret.scaley)
 
             end
         end

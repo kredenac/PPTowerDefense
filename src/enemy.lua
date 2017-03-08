@@ -98,7 +98,8 @@ end
 function M.drawCreeps()
     love.graphics.setColor(255,255,255)
     for _,i in pairs(M.creeps) do
-        love.graphics.draw(M.img,  (i.posx-1)*chunkW, (i.posy-1)*chunkH,
+        -- FIXME topBarHeight
+        love.graphics.draw(M.img, (i.posx-1)*chunkW, 50 + (i.posy-1)*chunkH,
             0, 1/5, 1/5)
     end
 end
