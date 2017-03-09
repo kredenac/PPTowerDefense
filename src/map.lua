@@ -47,10 +47,8 @@ function M.removeTurret(i, j)
             M.turrets[k] = nil --ovako se brise entry iz tabele
         end
     end
-    --print(tableSize(M.turrets))
 end
---FIXME ? moja ideja je bila da se ovde cuvaju kule, da ne bi morala cela
---matrica da se obilazi sa 2 for petlje da bismo imali spisak kula
+
 M.turrets = {}
 
 turret = {}
@@ -63,12 +61,11 @@ screen = {}
 --update vars pri resize
 function M.updateSize(topBar, bottomBar)
     screen.width = love.graphics.getWidth()
-    --                                      topBar - bottomBar FIXME
-    screen.height = love.graphics.getHeight() - 50 - 150
+    screen.height = love.graphics.getHeight() - gui.topBarHeight - gui.bottomBarHeight
     background.scalex = 1/(background.img:getWidth()/screen.width)
     background.scaley = 1/(background.img:getHeight()/screen.height)
-    print(screen.width, screen.height)
-    print(background.scalex.." "..background.scaley)
+    -- print(screen.width, screen.height)
+    -- print(background.scalex.." "..background.scaley)
     chunkW = screen.width / M.map.width
     chunkH = screen.height / M.map.height
     --kolko se slicica skalira. kada ubacimo resize ovo treba update
@@ -88,7 +85,7 @@ function M.generateEmpty(width,height)
             M.map[i][j] = {}
             --val je tip objekta
             M.map[i][j].val = M.const.empty
-            --TODO umesto val nek ima .obj, a obj u sebi val
+            --TODO umesto val nek ima .obj, a obj u sebi val. a mozda no need...
             M.map[i][j].hover = false
         end
     end
@@ -106,9 +103,8 @@ function M.mouse()
     selectedY=-1
     for i=1 , M.map.width do
         for j=1 , M.map.height do
-            -- 50 zbog barHeight FIXME
             isx = mouseX > (i-1)*chunkW and mouseX < i*chunkW
-            isy = mouseY > 50 + (j-1)*chunkH and mouseY < 50 + j*chunkH
+            isy = mouseY > 50 + (j-1)*chunkH and mouseY < gui.topBarHeight + j*chunkH
             if isx and isy then
                 M.map[i][j].hover = true
                 selectedX, selectedY = i , j
@@ -121,11 +117,9 @@ function M.mouse()
 end
 
 -- Iscrtava mapu
---TODO sredi donji deo turreta da se ne preklapa sa prozirnim
 function M.draw()
     love.graphics.setColor(255, 255, 255, 255)
-                                      -- topBar FIXME
-    love.graphics.draw(background.img, 0, 50, 0, background.scalex, background.scaley )
+    love.graphics.draw(background.img, 0, gui.topBarHeight, 0, background.scalex, background.scaley )
     local highlight=255
     for i=1 , M.map.width do
         for j=1 , M.map.height do
@@ -136,14 +130,13 @@ function M.draw()
                 love.graphics.setColor(M.colorHover.r, M.colorHover.g,
                     M.colorHover.b, M.colorHover.a)
             end
-                -- 50 je topBar height FIXME
-                love.graphics.rectangle("fill", (i-1)*chunkW, 50 + (j-1)*chunkH, chunkW-1, chunkH-1)
+                love.graphics.rectangle("fill", (i-1)*chunkW, gui.topBarHeight + (j-1)*chunkH, chunkW-1, chunkH-1)
 
             --draw turret
             if M.map[i][j].val == M.const.turret then
                 love.graphics.setColor(220,220,255)
                 love.graphics.draw(turret.img,  (i-1)*chunkW, (j-1)*chunkH,
-        --orientation, scale x,       scale y, offsetx, offsety FIXME offset ume da zeza
+        --orientation,                           , offsetx, offsety FIXME ulepsaj 0.4
                     0, turret.scalex, turret.scaley, 0, -chunkH*0.4/turret.scaley)
 
             end

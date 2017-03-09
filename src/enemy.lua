@@ -3,28 +3,47 @@ local M={}
 M.img = love.graphics.newImage("img/enemy.png")
 M.creeps={}
 
-local newCreep={}
-newCreep.health=100
-newCreep.posx=1
-newCreep.posy=1
-newCreep.dmg=10
+local creep={}
+creep.health=1000
+--coords chunka
+creep.posx=1
+creep.posy=1
+--pozicija u chunku
+creep.x = 0
+creep.y = 0
+creep.dmg=10
+numCreeps=0
 
 --FIXME e sad.. da l ovo u enemy.lua ili map.lua? najbolje u neki nov fajl
 --iscrtava nisan od kule do neprijatelja
 function M.targetEnemies()
     love.graphics.setColor(255, 0, 0)
     local offsetx = chunkW / 2
-    local offsety = chunkH / 2
+    local offsety = chunkH / 2 + gui.topBarHeight
+
     for _, v in pairs(map.turrets) do
-		i, j = v.x, v.y
-		creeps = enemy.nearTower(i,j)
-		if creeps ~= nil then
-			for _,k in pairs(creeps) do
-				love.graphics.line((i-1)*chunkW + offsetx, (j-1)*chunkH + offsety,
-					(k.posx-1)*chunkW + offsetx, (k.posy-1)*chunkH + offsety)
-			end
+		local i, j = v.x, v.y
+		local creeps = enemy.nearTower(i,j)
+        local startx = (i-1)*chunkW + offsetx
+        local starty = (j-1)*chunkH + offsety
+		for _,v in pairs(creeps) do
+            --draw ray
+            local endx = (M.creeps[v].posx-1 + M.creeps[v].x/2)*chunkW + offsetx
+            local endy = (M.creeps[v].posy-1 + M.creeps[v].y/2)*chunkH + offsety
+			love.graphics.line(startx, starty,endx, endy)
+            --inflict damage
+            local dead = M.creeps[v]:inflictDamage(3)
+            if dead then
+                 M.creeps[v] = nil
+                 numCreeps = numCreeps - 1
+            end
 		end
 	end
+end
+
+function creep:inflictDamage(dmg)
+    self.health = self.health - dmg
+    return self.health <= 0
 end
 
 -- shallow-copy tabele, samo copy paste vrednosti
@@ -42,65 +61,94 @@ end
 --moze se optimizovati ako se cuvaju svi kripovi u odredjenom polju
 function M.nearTower(i,j)
     local result = {}
-    for _,k in pairs(M.creeps) do
-        if math.abs(k.posx - i) <=1 and math.abs(k.posy - j) <=1 then
+    for k,v in pairs(M.creeps) do
+        if math.abs(v.posx - i) <=1 and math.abs(v.posy - j) <=1 then
             table.insert(result, k)
         end
     end
     return result
 end
 
-numCreeps=0
+creepId = 1
 function M.spawnCreeps()
-    table.insert(M.creeps, copy(newCreep) )
-    numCreeps=numCreeps+1
+    local newCreep = copy(creep)
+    M.creeps[creepId] = newCreep
+    creepId = creepId + 1
+    numCreeps = numCreeps + 1
     print(numCreeps)
 end
 
 --samo za testiranje. treba da slusa 'naredjenja' od A*, a ne usr input
 function M.moveCreeps(key)
-    dx, dy = 0, 0
+    local dx, dy = 0, 0
+    local step = 0.4
     if key == "w" then
-		dy = -1
+		dy = -step
 	end
     if love.keyboard.isDown("s") then
-		dy = 1
+		dy = step
 	end
     if love.keyboard.isDown("a") then
-		dx = -1
+		dx = -step
 	end
     if love.keyboard.isDown("d") then
-		dx = 1
+		dx = step
 	end
 
     for _,i in pairs(M.creeps) do
-        tryx = i.posx + dx
-        tryy = i.posy + dy
-        --nema lenjog izracunavanja...
-        --print("tryx>=1 and tryx<=map.map.width ",(tryx>=1 and tryx<=map.map.width ))
-        if tryx>=1 and tryx<=map.map.width then
-            --print("map.map[tryx][i.posy] == map.const.empty ",(map.map[tryx][i.posy].val == map.const.empty))
-            if map.map[tryx][i.posy].val == map.const.empty then
-                i.posx = tryx
-            end
-        end
-        --print("tryx>=1 and tryx<=map.map.height ",tryx>=1 and tryx<=map.map.height)
-        if tryy>=1 and tryy<=map.map.height then
-            --print("map.map[i.posx][tryy].val == map.const.empty ", map.map[i.posx][tryy].val == map.const.empty)
-            if map.map[i.posx][tryy].val == map.const.empty then
-                i.posy = tryy
-            end
-        end
+        local tryx = i.x + dx
+        local tryy = i.y + dy
 
+        if tryx <= -1 then
+            if i.posx - 1 >= 1 then
+                if map.map[i.posx - 1][i.posy].val == map.const.empty then
+                    i.posx = i.posx - 1
+                    i.x = 1 - step
+                end
+            end
+        elseif tryx >= 1 then
+            if i.posx + 1 <= map.map.width then
+                if map.map[i.posx + 1][i.posy].val == map.const.empty then
+                    i.posx = i.posx + 1
+                    i.x = -1 + step
+                end
+            end
+        elseif tryy >= 1 then
+            if i.posy + 1 <= map.map.height then
+                if map.map[i.posx][i.posy + 1].val == map.const.empty then
+                    i.posy = i.posy + 1
+                    i.y = -1 + step
+                end
+            end
+        elseif tryy <= -1 then
+            if i.posy - 1 >= 1 then
+                if map.map[i.posx][i.posy - 1].val == map.const.empty then
+                    i.posy = i.posy - 1
+                    i.y = 1 - step
+                end
+            end
+        else
+            i.x = tryx
+            i.y = tryy
+        end
     end
 end
 
 function M.drawCreeps()
-    love.graphics.setColor(255,255,255)
+    local hpBarAbove = 5
+    local hpBarWidth = 20
     for _,i in pairs(M.creeps) do
-        -- FIXME topBarHeight
-        love.graphics.draw(M.img, (i.posx-1)*chunkW, 50 + (i.posy-1)*chunkH,
-            0, 1/5, 1/5)
+        -- local x = (i.posx-1)*chunkW
+        -- local y = gui.topBarHeight + (i.posy-1)*chunkH
+        local x = (i.posx-1 + i.x/2)*chunkW
+        local y = gui.topBarHeight + (i.posy-1 + i.y/2)*chunkH
+        --draw hp
+        local hpPercent = i.health / creep.health
+        love.graphics.setColor(255*(1-hpPercent),255*hpPercent,0)
+        love.graphics.line( x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
+        --draw creep
+        love.graphics.setColor(255,255,255)
+        love.graphics.draw(M.img, x, y, 0, 1/5, 1/5)
     end
 end
 return M

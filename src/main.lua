@@ -20,14 +20,16 @@ function love.load()
 	love.mouse.setVisible(false)
 	mouseImg = love.graphics.newImage("img/mouse_cursor.png")
 	music = love.audio.newSource("img/music.mp3")
-	--music:play() --pod comm je da ne slusamo stalno dok pravimo
-	musicVolume = 1
-
+	music:play()
+	musicVolume = 0 --da ne slusamo stalno
+	love.audio.setVolume(musicVolume)
+	love.keyboard.setKeyRepeat(true)
+	love.graphics.setLineWidth( 5 )
 end
 
 function love.update(dt)
 	updateMouse()
---	updateKeyboard()
+
 end
 
 function love.draw()
