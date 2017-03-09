@@ -12,7 +12,8 @@ function love.load()
 	map.generateEmpty(19,10)
 
 	love.mouse.setVisible(false)
-	mouseImg = love.graphics.newImage("img/mouse_cursor.png")
+	defaultCursor = love.graphics.newImage("img/mouse_cursor.png")
+
 	music = love.audio.newSource("img/music.mp3")
 	music:play()
 	musicVolume = 0 --da ne slusamo stalno
@@ -49,10 +50,10 @@ function love.draw()
 
 	enemy.targetEnemies()
 
-	drawMouse()
+	drawMouse(mouseImg)
 end
 
-function drawMouse()
+function drawMouse(mouseImg)
 	mousex,mousey=love.mouse.getPosition()
 	love.graphics.setColor(255,255,255)
 	love.graphics.draw(mouseImg, mousex, mousey, 0, 0.5)
@@ -60,6 +61,12 @@ end
 
 function updateMouse()
 	gui.mouse()
+	if gui.selectedTurretType ~= 0 then
+		mouseImg = gui.buttons[gui.selectedTurretType].cursor
+	else
+		mouseImg = defaultCursor
+	end
+
 	local x,y = map.mouse()
 	local leftClick = love.mouse.isDown(1)
 	--kliknuto x,y polje, postavi tu turret

@@ -87,18 +87,21 @@ end
 function M.moveCreeps(key)
     local dx, dy = 0, 0
     local step = M.step
+    print(key)
     if key == "w" then
-		dy = -step
-	end
+  		dy = -step
+  	end
     if key == "s" then
-		dy = step
-	end
+  		dy = step
+  	end
     if key == "a" then
-		dx = -step
-	end
+  		dx = -step
+  	end
     if key == "d" then
-		dx = step
-	end
+  		dx = step
+  	end
+
+    -- print (dx,dy)
 
     for _,i in pairs(M.creeps) do
         local tryx = i.x + dx

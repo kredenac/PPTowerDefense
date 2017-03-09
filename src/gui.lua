@@ -19,11 +19,15 @@ M.buttons[3] = {}
 M.buttons[1].img = ButtonImg
 M.buttons[2].img = ButtonImg2
 M.buttons[3].img = ButtonImg3
+M.buttons[1].cursor = ButtonImg
+M.buttons[2].cursor = ButtonImg2
+M.buttons[3].cursor = ButtonImg3
 M.buttons[1].hover = false
 M.buttons[2].hover = false
 M.buttons[3].hover = false
+-- TODO samo jedan moze biti hoverovan, nema potreba za ovoliko boolova
 
-M.selectedTurretType = 1
+M.selectedTurretType = 0
 buttonMargin = 10
 buttonPadding = 10
 
@@ -39,7 +43,7 @@ function drawButton(n,img)
   offsetx =  - (buttonSize/scale - img:getWidth())/2
 
   local alpha
-  if M.buttons[n].hover == true then
+  if M.buttons[n].hover == true or M.selectedTurretType == n then
     alpha = 255
   else
     alpha = 200
@@ -70,11 +74,22 @@ function M.mouse()
     mouseX, mouseY = love.mouse.getPosition()
     isy = mouseY > love.graphics.getHeight() - buttonSize - buttonMargin and mouseY < love.graphics.getHeight() - buttonMargin
     for i=1 , 3 do
-        isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize)
-        M.buttons[i].hover = isx and isy
+        isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize+buttonMargin)
         --TODO promeni za klik i ulepsaj
         if isx and isy and (i==1 or i==2) then
-            M.selectedTurretType = i
+            M.buttons[i].hover = true
+            local leftClick = love.mouse.isDown(1)
+            if leftClick == true then
+              if M.selectedTurretType == i then
+                -- M.selectedTurretType = 0
+                -- FIXME Da ne bi treptalo stoji i umesto 0. Promeni kad prebacis u callback
+                M.selectedTurretType = i
+              else
+                M.selectedTurretType = i
+              end
+            end
+        else
+            M.buttons[i].hover = false
         end
     end
     --TODO nek radi selectovanje clickom

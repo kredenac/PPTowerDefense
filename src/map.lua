@@ -25,7 +25,7 @@ M.colorHover.b = 200
 M.colorHover.a = 100
 
 function M.newTurret(i, j, type)
-    if map.map[i][j].val ~= map.const.empty then
+    if map.map[i][j].val ~= map.const.empty or type == 0 then
         return
     end
     M.map[i][j].val = M.const.turret
