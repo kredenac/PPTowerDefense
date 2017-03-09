@@ -10,20 +10,25 @@ M.topBarHeight = 50
 M.bottomBarHeight = 150
 
 ButtonImg = love.graphics.newImage("img/turret.png")
-ButtonImg2 = love.graphics.newImage("img/enemy.png")
+ButtonImg2 = love.graphics.newImage("img/frostTurret.png")
+ButtonImg3 = love.graphics.newImage("img/enemy.png")
 M.buttons = {}
 M.buttons[1] = {}
 M.buttons[2] = {}
+M.buttons[3] = {}
 M.buttons[1].img = ButtonImg
 M.buttons[2].img = ButtonImg2
+M.buttons[3].img = ButtonImg3
 M.buttons[1].hover = false
 M.buttons[2].hover = false
+M.buttons[3].hover = false
 
+M.selectedTurretType = 1
 buttonMargin = 10
 buttonPadding = 10
 
 buttonSize = M.bottomBarHeight - 2 * buttonMargin
-buttonInnerSize = buttonSize - 2*buttonPadding
+buttonInnerSize = buttonSize - 2 * buttonPadding
 
 function drawButton(n,img)
   love.graphics.setColor(55,55,55, 100)
@@ -63,15 +68,16 @@ end
 
 function M.mouse()
     mouseX, mouseY = love.mouse.getPosition()
-    for i=1 , 2 do
-          isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize)
-          isy = mouseY > love.graphics.getHeight() - buttonSize - buttonMargin and mouseY < love.graphics.getHeight() - buttonMargin
-          if isx and isy then
-              M.buttons[i].hover = true
-          else
-              M.buttons[i].hover = false
-          end
+    isy = mouseY > love.graphics.getHeight() - buttonSize - buttonMargin and mouseY < love.graphics.getHeight() - buttonMargin
+    for i=1 , 3 do
+        isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize)
+        M.buttons[i].hover = isx and isy
+        --TODO promeni za klik i ulepsaj
+        if isx and isy and (i==1 or i==2) then
+            M.selectedTurretType = i
+        end
     end
+    --TODO nek radi selectovanje clickom
     return selectedX, selectedY
 end
 

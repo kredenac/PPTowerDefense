@@ -24,15 +24,18 @@ M.colorHover.g = 100
 M.colorHover.b = 200
 M.colorHover.a = 100
 
-function M.newTurret(i, j)
+function M.newTurret(i, j, type)
     if map.map[i][j].val ~= map.const.empty then
         return
     end
     M.map[i][j].val = M.const.turret
+    --TODO ovo je malo ruzno da bude atribut mape
+    M.map[i][j].ttype = type
     newTurret = {}
     newTurret.hp = 100
     newTurret.x = i
     newTurret.y = j
+    newTurret.type = type
     table.insert(M.turrets, newTurret)
     --print(tableSize(M.turrets))
 end
@@ -52,7 +55,11 @@ end
 M.turrets = {}
 
 turret = {}
-turret.img = love.graphics.newImage("img/turret.png")
+turret[1] = {}
+turret[2] = {}
+--TODO da ne budu slike loadovane 2x
+turret[1].img = love.graphics.newImage("img/turret.png")
+turret[2].img = love.graphics.newImage("img/frostTurret.png")
 background = {}
 background.img = love.graphics.newImage("img/sand.jpg")
 
@@ -65,19 +72,18 @@ function M.updateSize(topBar, bottomBar)
     background.scalex = 1/(background.img:getWidth()/screen.width)
     background.scaley = 1/(background.img:getHeight()/screen.height)
     -- print(screen.width, screen.height)
-    -- print(background.scalex.." "..background.scaley)
     chunkW = screen.width / M.map.width
     chunkH = screen.height / M.map.height
     --kolko se slicica skalira. kada ubacimo resize ovo treba update
     --da ne bismo bas svaki frame za svaku kulu racunali
-    turret.scalex=1/(turret.img:getWidth()/(chunkW-1)) -- minus 1 zbog ivice grida
-    turret.scaley=1/(turret.img:getHeight()/(chunkH-1))*1.5--TODO ulepsaj
+
+    turret.scalex = 1/(turret[1].img:getWidth()/(chunkW-1)) -- minus 1 zbog ivice grida
+    turret.scaley = 1/(turret[1].img:getHeight()/(chunkH-1))*1.5--TODO ulepsaj
 end
 
 
 -- Generise praznu mapu
 -- postavlja chunkW i chunkH, sto je visina i sirina svakog pravougaonika
-
 function M.generateEmpty(width,height)
     for i=1,width do
         M.map[i] = {}
@@ -102,8 +108,8 @@ function M.mouse()
     selectedX=-1
     selectedY=-1
     for i=1 , M.map.width do
+        isx = mouseX > (i-1)*chunkW and mouseX < i*chunkW
         for j=1 , M.map.height do
-            isx = mouseX > (i-1)*chunkW and mouseX < i*chunkW
             isy = mouseY > 50 + (j-1)*chunkH and mouseY < gui.topBarHeight + j*chunkH
             if isx and isy then
                 M.map[i][j].hover = true
@@ -130,12 +136,13 @@ function M.draw()
                 love.graphics.setColor(M.colorHover.r, M.colorHover.g,
                     M.colorHover.b, M.colorHover.a)
             end
-                love.graphics.rectangle("fill", (i-1)*chunkW, gui.topBarHeight + (j-1)*chunkH, chunkW-1, chunkH-1)
+            love.graphics.rectangle("fill", (i-1)*chunkW, gui.topBarHeight + (j-1)*chunkH, chunkW-1, chunkH-1)
 
             --draw turret
             if M.map[i][j].val == M.const.turret then
+                local img = turret[M.map[i][j].ttype].img
                 love.graphics.setColor(220,220,255)
-                love.graphics.draw(turret.img,  (i-1)*chunkW, (j-1)*chunkH,
+                love.graphics.draw(img,  (i-1)*chunkW, (j-1)*chunkH,
         --orientation,                           , offsetx, offsety FIXME ulepsaj 0.4
                     0, turret.scalex, turret.scaley, 0, -chunkH*0.4/turret.scaley)
 

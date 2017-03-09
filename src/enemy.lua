@@ -2,7 +2,7 @@ local M={}
 
 M.img = love.graphics.newImage("img/enemy.png")
 M.creeps={}
-
+M.step = 0.1
 local creep={}
 creep.health=1000
 --coords chunka
@@ -17,7 +17,6 @@ numCreeps=0
 --FIXME e sad.. da l ovo u enemy.lua ili map.lua? najbolje u neki nov fajl
 --iscrtava nisan od kule do neprijatelja
 function M.targetEnemies()
-    love.graphics.setColor(255, 0, 0)
     local offsetx = chunkW / 2
     local offsety = chunkH / 2 + gui.topBarHeight
 
@@ -26,6 +25,12 @@ function M.targetEnemies()
 		local creeps = enemy.nearTower(i,j)
         local startx = (i-1)*chunkW + offsetx
         local starty = (j-1)*chunkH + offsety
+        --TODO boje se ne setuju ovde nego su odredjene pri kreiranju kule
+        if v.type == 1 then
+            love.graphics.setColor(255, 0, 0)
+        else
+            love.graphics.setColor(150, 200, 255)
+        end
 		for _,v in pairs(creeps) do
             --draw ray
             local endx = (M.creeps[v].posx-1 + M.creeps[v].x/2)*chunkW + offsetx
@@ -81,17 +86,17 @@ end
 --samo za testiranje. treba da slusa 'naredjenja' od A*, a ne usr input
 function M.moveCreeps(key)
     local dx, dy = 0, 0
-    local step = 0.4
+    local step = M.step
     if key == "w" then
 		dy = -step
 	end
-    if love.keyboard.isDown("s") then
+    if key == "s" then
 		dy = step
 	end
-    if love.keyboard.isDown("a") then
+    if key == "a" then
 		dx = -step
 	end
-    if love.keyboard.isDown("d") then
+    if key == "d" then
 		dx = step
 	end
 
@@ -138,8 +143,6 @@ function M.drawCreeps()
     local hpBarAbove = 5
     local hpBarWidth = 20
     for _,i in pairs(M.creeps) do
-        -- local x = (i.posx-1)*chunkW
-        -- local y = gui.topBarHeight + (i.posy-1)*chunkH
         local x = (i.posx-1 + i.x/2)*chunkW
         local y = gui.topBarHeight + (i.posy-1 + i.y/2)*chunkH
         --draw hp

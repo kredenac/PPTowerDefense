@@ -1,11 +1,6 @@
---drzite tab size na 4
---nije mnogo bitno, al slike su u /src/img
---al ne znam da ih stavim van src a da ih ucitam
-
---kolko vidim kad se crta slicica mora da se postavi boja na
---belu da bi lepo iscrtalo
+--drzite tab size na 4!!!
 function love.load()
-	love.window.setTitle("Placeholder")
+	love.window.setTitle("Defense of the Burek")
 	defaultWidth, defaultHeight = 1024, 768
 	love.window.setMode( defaultWidth, defaultHeight )
 
@@ -16,7 +11,6 @@ function love.load()
 
 	map.generateEmpty(19,10)
 
-	--set mouse
 	love.mouse.setVisible(false)
 	mouseImg = love.graphics.newImage("img/mouse_cursor.png")
 	music = love.audio.newSource("img/music.mp3")
@@ -25,11 +19,27 @@ function love.load()
 	love.audio.setVolume(musicVolume)
 	love.keyboard.setKeyRepeat(true)
 	love.graphics.setLineWidth( 5 )
+	randomMovementOn = true
 end
 
 function love.update(dt)
 	updateMouse()
+	if randomMovementOn then
+		moveRandom()
+	end
+end
 
+moves = {}
+function moveRandom()
+	local move = {"w", "s", "a", "d"}
+	if moves[1]==nil then
+		local go = move[math.random(4)]
+		local times = math.random(10) + 3
+		for i=1,times do
+			table.insert(moves, go)
+		end
+	end
+	enemy.moveCreeps(table.remove(moves))
 end
 
 function love.draw()
@@ -55,7 +65,7 @@ function updateMouse()
 	--kliknuto x,y polje, postavi tu turret
 	if leftClick then --jer nema lenjog izracunavanja
 		if ( x > 0 and y > 0) then
-			map.newTurret(x, y)
+			map.newTurret(x, y, gui.selectedTurretType)
 		end
 	end
 	local rightClick = love.mouse.isDown(2)
@@ -73,7 +83,14 @@ function love.keypressed( key )
    if key == "w" or key == "s" or key == "a" or key == "d" then
       enemy.moveCreeps(key)
    end
-
+	if key == "r" then
+		randomMovementOn = not randomMovementOn
+		if randomMovementOn then
+			enemy.step = 0.1
+		else
+			enemy.step = 0.33
+		end
+	end
    if key == "m" then
 	   musicVolume = -musicVolume  + 1
 	   print(musicVolume)
@@ -98,7 +115,7 @@ end
 
 --callback na resize
 function love.resize(w, h)
-  print(("Window resized to width: %d and height: %d."):format(w, h))
+	print(("Window resized to width: %d and height: %d."):format(w, h))
 	M.updateSize()
 end
 
