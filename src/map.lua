@@ -25,7 +25,10 @@ M.colorHover.b = 200
 M.colorHover.a = 100
 
 function M.newTurret(i, j, type)
-    if map.map[i][j].val ~= map.const.empty or type == 0 then
+    if map.map[i][j].val ~= map.const.empty or
+       type == 0 or
+       gui.gold - 50 < 0 -- FIXME svaki turret svoj cost
+       then
         return
     end
     M.map[i][j].val = M.const.turret
@@ -37,6 +40,7 @@ function M.newTurret(i, j, type)
     newTurret.y = j
     newTurret.type = type
     table.insert(M.turrets, newTurret)
+    gui.gold = gui.gold - 50
     --print(tableSize(M.turrets))
 end
 
@@ -48,6 +52,7 @@ function M.removeTurret(i, j)
     for k, v in pairs(M.turrets) do
         if v.x == i and v.y == j then
             M.turrets[k] = nil --ovako se brise entry iz tabele
+            gui.gold = gui.gold + 25 -- FIXME 50 posto cene turreta
         end
     end
 end

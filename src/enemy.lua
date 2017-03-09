@@ -41,6 +41,8 @@ function M.targetEnemies()
             if dead then
                  M.creeps[v] = nil
                  numCreeps = numCreeps - 1
+                 gui.gold = gui.gold + 10 -- FIXME cena neprijatelja
+                 -- TODO kad umre da iskoci + (gold) iznad njega
             end
 		end
 	end
@@ -87,7 +89,7 @@ end
 function M.moveCreeps(key)
     local dx, dy = 0, 0
     local step = M.step
-    print(key)
+    -- print(key)
     if key == "w" then
   		dy = -step
   	end

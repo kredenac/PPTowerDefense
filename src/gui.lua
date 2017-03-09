@@ -9,6 +9,9 @@ M.color.a = 255
 M.topBarHeight = 50
 M.bottomBarHeight = 150
 
+goldIcon = love.graphics.newImage("img/gold.png")
+M.gold = 1000
+
 ButtonImg = love.graphics.newImage("img/turret.png")
 ButtonImg2 = love.graphics.newImage("img/frostTurret.png")
 ButtonImg3 = love.graphics.newImage("img/enemy.png")
@@ -38,7 +41,7 @@ function drawButton(n,img)
   love.graphics.setColor(55,55,55, 100)
   love.graphics.rectangle("fill", buttonMargin + (n-1)*(buttonSize+buttonMargin),  love.graphics.getHeight() - buttonSize - buttonMargin, buttonSize, buttonSize)
 
-  scale = 1/(img:getHeight()/buttonInnerSize)
+  local scale = 1/(img:getHeight()/buttonInnerSize)
 
   offsetx =  - (buttonSize/scale - img:getWidth())/2
 
@@ -55,6 +58,12 @@ end
 function drawTopBar()
   love.graphics.setColor(M.color.r, M.color.g, M.color.b, M.color.a)
   love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), M.topBarHeight)
+
+  local scale = 1/(goldIcon:getHeight()/M.topBarHeight)
+  love.graphics.draw(goldIcon, 0 , 0 , 0, scale, scale, 0, 0)
+  love.graphics.setColor(155,155,0)
+  love.graphics.setNewFont(35)
+  love.graphics.print(tostring(M.gold), 50 , 5, 0 )
 end
 
 function drawBottomBar()
