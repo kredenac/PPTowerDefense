@@ -25,11 +25,9 @@ M.colorHover.b = 200
 M.colorHover.a = 100
 
 function M.newTurret(i, j, type)
-    if map.map[i][j].val ~= map.const.empty or
-       type == 0 or
-       gui.gold - turret[type].cost < 0
-       then
-        return
+    if M.map[i][j].val ~= M.const.empty or type == 0 or
+       gui.gold - turret[type].cost < 0 then
+       return
     end
     M.map[i][j].val = M.const.turret
 
@@ -90,10 +88,14 @@ function M.updateSize(topBar, bottomBar)
     chunkH = screen.height / M.map.height
     --kolko se slicica skalira. kada ubacimo resize ovo treba update
     --da ne bismo bas svaki frame za svaku kulu racunali
-    rock.scalex = 1/(rock.img:getWidth()/(chunkW-1))
-    rock.scaley = 1/(rock.img:getHeight()/(chunkH-1))*1.5
-    turret.scalex = 1/(turret[1].img:getWidth()/(chunkW-1)) -- minus 1 zbog ivice grida
-    turret.scaley = 1/(turret[1].img:getHeight()/(chunkH-1))*1.5--TODO ulepsaj
+    local turretToChunkHeight = 1.5
+    local rockToChunkHeight = 1.2
+    rock.scalex = 1/(rock.img:getWidth()/chunkW)
+    rock.scaley = 1/(rock.img:getHeight()/chunkH)*rockToChunkHeight
+    rock.offsety = gui.topBarHeight - rock.img:getHeight()*rock.scaley
+    turret.scalex = 1/(turret[1].img:getWidth()/chunkW)
+    turret.scaley = 1/(turret[1].img:getHeight()/chunkH)*turretToChunkHeight
+    turret.offsety = gui.topBarHeight - turret[1].img:getHeight()*turret.scaley
 end
 
 
@@ -125,10 +127,10 @@ end
 -- Promeni boju chunka na hover
 -- moze matematicki da se izracuna u kom je polju, umesto for petlje
 -- mada nije mnogo bitno jer je mali grid
-function M.mouse()
-    mouseX, mouseY = love.mouse.getPosition()
-    selectedX=-1
-    selectedY=-1
+function M.mouse(x, y)
+    local mouseX, mouseY = x, y
+    local selectedX = -1
+    local selectedY = -1
     for i=1 , M.map.width do
         isx = mouseX > (i-1)*chunkW and mouseX < i*chunkW
         for j=1 , M.map.height do
@@ -148,6 +150,7 @@ end
 function M.draw()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(background.img, 0, gui.topBarHeight, 0, background.scalex, background.scaley )
+
     local highlight=255
     for i=1 , M.map.width do
         for j=1 , M.map.height do
@@ -164,14 +167,13 @@ function M.draw()
             if M.map[i][j].val == M.const.turret then
                 local img = turret[M.map[i][j].ttype].img
                 love.graphics.setColor(255,255,255)
-                love.graphics.draw(img,  (i-1)*chunkW, (j-1)*chunkH,
-        --orientation,                           , offsetx, offsety FIXME ulepsaj 0.4
-                    0, turret.scalex, turret.scaley, 0, -chunkH*0.4/turret.scaley)
-
+                love.graphics.draw(img,  (i-1)*chunkW, j*chunkH + turret.offsety,
+                    0, turret.scalex, turret.scaley)
+            --draw rock
             elseif M.map[i][j].val == M.const.rock then
                 love.graphics.setColor(255,255,255)
-                love.graphics.draw(rock.img,  (i-1)*chunkW, (j-1)*chunkH,
-                    0, rock.scalex, rock.scaley, 0, -chunkH*0.4/rock.scaley)
+                love.graphics.draw(rock.img,  (i-1)*chunkW, j*chunkH + rock.offsety,
+                    0, rock.scalex, rock.scaley)
 
             end
         end

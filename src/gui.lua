@@ -79,30 +79,39 @@ function M.draw()
   end
 end
 
-function M.mouse()
-    mouseX, mouseY = love.mouse.getPosition()
+function M.mouseMoved(x, y)
+    mouseX, mouseY = x, y
     isy = mouseY > love.graphics.getHeight() - buttonSize - buttonMargin and mouseY < love.graphics.getHeight() - buttonMargin
     for i=1, 3 do
         isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize+buttonMargin)
-        --TODO promeni za klik i ulepsaj
-        if isx and isy and (i==1 or i==2) then
+        if isx and isy then
             M.buttons[i].hover = true
-            local leftClick = love.mouse.isDown(1)
+        else
+            M.buttons[i].hover = false
+        end
+    end
+end
+
+function M.mousePressed(x, y, button)
+    mouseX, mouseY = x, y
+    isy = mouseY > love.graphics.getHeight() - buttonSize - buttonMargin and mouseY < love.graphics.getHeight() - buttonMargin
+    for i=1, 3 do
+        isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize+buttonMargin)
+
+        if isx and isy then
+            M.buttons[i].hover = true
+            local leftClick = button == 1
             if leftClick == true then
-              if M.selectedTurretType == i then
-                -- M.selectedTurretType = 0
-                -- FIXME Da ne bi treptalo stoji i umesto 0. Promeni kad prebacis u callback
                 M.selectedTurretType = i
-              else
-                M.selectedTurretType = i
-              end
             end
         else
             M.buttons[i].hover = false
         end
     end
-    --TODO nek radi selectovanje clickom
-    return selectedX, selectedY
+    --ako je kliknuto nesto sto nije turret
+    if M.selectedTurretType ~= 1 and M.selectedTurretType ~=2 then
+        M.selectedTurretType = 0
+    end
 end
 
 return M

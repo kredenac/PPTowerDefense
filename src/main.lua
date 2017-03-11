@@ -14,18 +14,18 @@ function love.load()
 
 	love.mouse.setVisible(false)
 	defaultCursor = love.graphics.newImage("img/mouse_cursor.png")
+	mouseImg = defaultCursor
 
 	music = love.audio.newSource("img/music.mp3")
 	music:play()
 	musicVolume = 0 --da ne slusamo stalno
 	love.audio.setVolume(musicVolume)
 	love.keyboard.setKeyRepeat(true)
-	love.graphics.setLineWidth( 5 )
+	love.graphics.setLineWidth(5)
 	randomMovementOn = true
 end
 
 function love.update(dt)
-	updateMouse()
 	if randomMovementOn then
 		moveRandom()
 	end
@@ -46,7 +46,7 @@ end
 
 function love.draw()
 	gui.draw()
-	map.draw(gui.topBarHeight)
+	map.draw()
 	enemy.drawCreeps()
 
 	enemy.targetEnemies()
@@ -58,6 +58,35 @@ function drawMouse(mouseImg)
 	mousex,mousey=love.mouse.getPosition()
 	love.graphics.setColor(255,255,255)
 	love.graphics.draw(mouseImg, mousex, mousey, 0, 0.5)
+end
+
+function love.mousemoved(x, y, dx, dy, istouch)
+	gui.mouseMoved(x, y)
+	map.mouse(x, y)
+end
+
+function love.mousepressed(x, y, button, istouch)
+	gui.mousePressed(x, y, button)
+	if gui.selectedTurretType ~= 0 then
+		mouseImg = gui.buttons[gui.selectedTurretType].cursor
+	else
+		mouseImg = defaultCursor
+	end
+
+	local x, y = map.mouse(x, y)
+	local leftClick = button == 1
+	--kliknuto x,y polje, postavi tu turret
+	if leftClick then --jer nema lenjog izracunavanja
+		if ( x > 0 and y > 0) then
+			map.newTurret(x, y, gui.selectedTurretType)
+		end
+	end
+	local rightClick = button == 2
+	if rightClick then
+		if ( x > 0 and y > 0 ) then
+			map.removeTurret(x, y)
+		end
+	end
 end
 
 function updateMouse()
@@ -124,7 +153,7 @@ end
 --callback na resize
 function love.resize(w, h)
 	print(("Window resized to width: %d and height: %d."):format(w, h))
-	M.updateSize()
+	map.updateSize()
 end
 
 function tableSize(tab)

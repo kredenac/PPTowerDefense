@@ -50,7 +50,6 @@ function creep:inflictDamage(dmg)
 end
 
 -- shallow-copy tabele, samo copy paste vrednosti
---TODO izdvoji u poseban fajl mby
 function copy (t)
     if type(t) ~= "table" then return t end
     local meta = getmetatable(t)
@@ -78,7 +77,7 @@ function M.spawnCreeps()
     M.creeps[creepId] = newCreep
     creepId = creepId + 1
     numCreeps = numCreeps + 1
-    print(numCreeps)
+    --print(numCreeps)
 end
 
 --samo za testiranje. treba da slusa 'naredjenja' od A*, a ne usr input
@@ -142,7 +141,8 @@ end
 
 function M.drawCreeps()
     local hpBarAbove = 5
-    local hpBarWidth = 20
+    local hpBarWidth = 30
+    local scalex, scaley = 0.2, 0.2
     for _,i in pairs(M.creeps) do
         local x = (i.posx-1 + i.x/2)*chunkW
         local y = gui.topBarHeight + (i.posy-1 + i.y/2)*chunkH
@@ -152,7 +152,7 @@ function M.drawCreeps()
         love.graphics.line(x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
         --draw creep
         love.graphics.setColor(255,255,255)
-        love.graphics.draw(M.img, x, y, 0, 1/5, 1/5)
+        love.graphics.draw(M.img, x, y, 0, scalex, scaley)
     end
 end
 return M
