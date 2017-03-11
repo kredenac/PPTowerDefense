@@ -12,19 +12,19 @@ M.bottomBarHeight = 150
 goldIcon = love.graphics.newImage("img/gold.png")
 M.gold = 1000
 
-ButtonImg = love.graphics.newImage("img/turret.png")
-ButtonImg2 = love.graphics.newImage("img/frostTurret.png")
-ButtonImg3 = love.graphics.newImage("img/enemy.png")
+fireTurretImg = love.graphics.newImage("img/turret.png")
+frostTurretImg = love.graphics.newImage("img/frostTurret.png")
+enemyImg = love.graphics.newImage("img/enemy.png")
 M.buttons = {}
 M.buttons[1] = {}
 M.buttons[2] = {}
 M.buttons[3] = {}
-M.buttons[1].img = ButtonImg
-M.buttons[2].img = ButtonImg2
-M.buttons[3].img = ButtonImg3
-M.buttons[1].cursor = ButtonImg
-M.buttons[2].cursor = ButtonImg2
-M.buttons[3].cursor = ButtonImg3
+M.buttons[1].img = fireTurretImg
+M.buttons[2].img = frostTurretImg
+M.buttons[3].img = enemyImg
+M.buttons[1].cursor = fireTurretImg
+M.buttons[2].cursor = frostTurretImg
+M.buttons[3].cursor = enemyImg
 M.buttons[1].hover = false
 M.buttons[2].hover = false
 M.buttons[3].hover = false
@@ -82,7 +82,7 @@ end
 function M.mouse()
     mouseX, mouseY = love.mouse.getPosition()
     isy = mouseY > love.graphics.getHeight() - buttonSize - buttonMargin and mouseY < love.graphics.getHeight() - buttonMargin
-    for i=1 , 3 do
+    for i=1, 3 do
         isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize+buttonMargin)
         --TODO promeni za klik i ulepsaj
         if isx and isy and (i==1 or i==2) then

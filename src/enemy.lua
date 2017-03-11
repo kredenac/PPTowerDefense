@@ -13,8 +13,7 @@ creep.x = 0
 creep.y = 0
 creep.dmg=10
 numCreeps=0
-
---FIXME e sad.. da l ovo u enemy.lua ili map.lua? najbolje u neki nov fajl
+creepValue = 10
 --iscrtava nisan od kule do neprijatelja
 function M.targetEnemies()
     local offsetx = chunkW / 2
@@ -25,12 +24,9 @@ function M.targetEnemies()
 		local creeps = enemy.nearTower(i,j)
         local startx = (i-1)*chunkW + offsetx
         local starty = (j-1)*chunkH + offsety
-        --TODO boje se ne setuju ovde nego su odredjene pri kreiranju kule
-        if v.type == 1 then
-            love.graphics.setColor(255, 0, 0)
-        else
-            love.graphics.setColor(150, 200, 255)
-        end
+
+        col = turret[v.type]
+        love.graphics.setColor(col.rayr, col.rayg, col.rayb)
 		for _,v in pairs(creeps) do
             --draw ray
             local endx = (M.creeps[v].posx-1 + M.creeps[v].x/2)*chunkW + offsetx
@@ -41,7 +37,7 @@ function M.targetEnemies()
             if dead then
                  M.creeps[v] = nil
                  numCreeps = numCreeps - 1
-                 gui.gold = gui.gold + 10 -- FIXME cena neprijatelja
+                 gui.gold = gui.gold + creepValue
                  -- TODO kad umre da iskoci + (gold) iznad njega
             end
 		end
@@ -153,7 +149,7 @@ function M.drawCreeps()
         --draw hp
         local hpPercent = i.health / creep.health
         love.graphics.setColor(255*(1-hpPercent),255*hpPercent,0)
-        love.graphics.line( x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
+        love.graphics.line(x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
         --draw creep
         love.graphics.setColor(255,255,255)
         love.graphics.draw(M.img, x, y, 0, 1/5, 1/5)

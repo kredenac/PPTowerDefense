@@ -6,7 +6,7 @@ M.map = {}
 M.map.width = 0
 M.map.height = 0
 
--- globalne predefinisane boje, da ustedimo memoriju (ne stavljamo na svaki chunk)
+-- globalne predefinisane boje
 M.color = {}
 M.color.r = 255
 M.color.g = 255
@@ -15,7 +15,7 @@ M.color.a = 100
 
 M.const={}
 M.const.empty=0
-M.const.wall=1
+M.const.rock=1
 M.const.turret=2
 
 M.colorHover = {}
@@ -27,12 +27,12 @@ M.colorHover.a = 100
 function M.newTurret(i, j, type)
     if map.map[i][j].val ~= map.const.empty or
        type == 0 or
-       gui.gold - 50 < 0 -- FIXME svaki turret svoj cost
+       gui.gold - turret[type].cost < 0
        then
         return
     end
     M.map[i][j].val = M.const.turret
-    --TODO ovo je malo ruzno da bude atribut mape
+
     M.map[i][j].ttype = type
     newTurret = {}
     newTurret.hp = 100
@@ -40,8 +40,7 @@ function M.newTurret(i, j, type)
     newTurret.y = j
     newTurret.type = type
     table.insert(M.turrets, newTurret)
-    gui.gold = gui.gold - 50
-    --print(tableSize(M.turrets))
+    gui.gold = gui.gold - turret[type].cost
 end
 
 function M.removeTurret(i, j)
@@ -52,7 +51,7 @@ function M.removeTurret(i, j)
     for k, v in pairs(M.turrets) do
         if v.x == i and v.y == j then
             M.turrets[k] = nil --ovako se brise entry iz tabele
-            gui.gold = gui.gold + 25 -- FIXME 50 posto cene turreta
+            gui.gold = gui.gold + turret[M.map[i][j].ttype].cost/2
         end
     end
 end
@@ -62,12 +61,22 @@ M.turrets = {}
 turret = {}
 turret[1] = {}
 turret[2] = {}
---TODO da ne budu slike loadovane 2x
-turret[1].img = love.graphics.newImage("img/turret.png")
-turret[2].img = love.graphics.newImage("img/frostTurret.png")
+turret[1].img = fireTurretImg
+turret[2].img = frostTurretImg
+turret[1].cost = 50
+turret[2].cost = 40
+
+turret[1].rayr = 255
+turret[1].rayg = 0
+turret[1].rayb = 0
+turret[2].rayr = 150
+turret[2].rayg = 200
+turret[2].rayb = 255
+
+rock = {}
+rock.img = love.graphics.newImage("img/rock.png")
 background = {}
 background.img = love.graphics.newImage("img/sand.jpg")
-
 screen = {}
 
 --update vars pri resize
@@ -81,7 +90,8 @@ function M.updateSize(topBar, bottomBar)
     chunkH = screen.height / M.map.height
     --kolko se slicica skalira. kada ubacimo resize ovo treba update
     --da ne bismo bas svaki frame za svaku kulu racunali
-
+    rock.scalex = 1/(rock.img:getWidth()/(chunkW-1))
+    rock.scaley = 1/(rock.img:getHeight()/(chunkH-1))*1.5
     turret.scalex = 1/(turret[1].img:getWidth()/(chunkW-1)) -- minus 1 zbog ivice grida
     turret.scaley = 1/(turret[1].img:getHeight()/(chunkH-1))*1.5--TODO ulepsaj
 end
@@ -89,22 +99,29 @@ end
 
 -- Generise praznu mapu
 -- postavlja chunkW i chunkH, sto je visina i sirina svakog pravougaonika
-function M.generateEmpty(width,height)
+function M.generateEmpty(width,height, numRocks)
     for i=1,width do
         M.map[i] = {}
         for j=1,height do
             M.map[i][j] = {}
             --val je tip objekta
             M.map[i][j].val = M.const.empty
-            --TODO umesto val nek ima .obj, a obj u sebi val. a mozda no need...
             M.map[i][j].hover = false
         end
     end
+    generateRocks(width, height, numRocks)
     M.map.width = width
     M.map.height = height
     M.updateSize()
 end
 
+function generateRocks(w, h, n)
+    for i=1, n do
+        local x = math.random(w)
+        local y = math.random(h)
+        M.map[x][y].val = M.const.rock
+    end
+end
 -- Promeni boju chunka na hover
 -- moze matematicki da se izracuna u kom je polju, umesto for petlje
 -- mada nije mnogo bitno jer je mali grid
@@ -146,10 +163,15 @@ function M.draw()
             --draw turret
             if M.map[i][j].val == M.const.turret then
                 local img = turret[M.map[i][j].ttype].img
-                love.graphics.setColor(220,220,255)
+                love.graphics.setColor(255,255,255)
                 love.graphics.draw(img,  (i-1)*chunkW, (j-1)*chunkH,
         --orientation,                           , offsetx, offsety FIXME ulepsaj 0.4
                     0, turret.scalex, turret.scaley, 0, -chunkH*0.4/turret.scaley)
+
+            elseif M.map[i][j].val == M.const.rock then
+                love.graphics.setColor(255,255,255)
+                love.graphics.draw(rock.img,  (i-1)*chunkW, (j-1)*chunkH,
+                    0, rock.scalex, rock.scaley, 0, -chunkH*0.4/rock.scaley)
 
             end
         end

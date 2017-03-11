@@ -3,13 +3,14 @@ function love.load()
 	love.window.setTitle("Defense of the Burek")
 	defaultWidth, defaultHeight = 1024, 768
 	love.window.setMode( defaultWidth, defaultHeight )
-
+	math.randomseed(os.time())
 	--ucitavanje modula
 	gui = require("gui")
 	map = require("map")
 	enemy = require("enemy")
 
-	map.generateEmpty(19,10)
+	numRocks = 19
+	map.generateEmpty(19,10, numRocks)
 
 	love.mouse.setVisible(false)
 	defaultCursor = love.graphics.newImage("img/mouse_cursor.png")
