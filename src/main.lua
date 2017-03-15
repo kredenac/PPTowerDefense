@@ -45,12 +45,11 @@ function moveRandom()
 end
 
 function love.draw()
-	gui.draw()
 	map.draw()
-	enemy.drawCreeps()
 
 	enemy.targetEnemies()
 
+	gui.draw()
 	drawMouse(mouseImg)
 end
 

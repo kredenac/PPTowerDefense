@@ -152,9 +152,9 @@ function M.draw()
     love.graphics.draw(background.img, 0, gui.topBarHeight, 0, background.scalex, background.scaley )
 
     local highlight=255
-    for i=1 , M.map.width do
-        for j=1 , M.map.height do
 
+    for j=1 , M.map.height do
+        for i=1 , M.map.width do
             if M.map[i][j].hover == false then
                 love.graphics.setColor(M.color.r, M.color.g, M.color.b, M.color.a)
             else
@@ -162,7 +162,13 @@ function M.draw()
                     M.colorHover.b, M.colorHover.a)
             end
             love.graphics.rectangle("fill", (i-1)*chunkW, gui.topBarHeight + (j-1)*chunkH, chunkW-1, chunkH-1)
+        end
+    end
 
+    for j=1 , M.map.height do
+      -- draw row of creeps
+      enemy.drawCreeps(j)
+        for i=1 , M.map.width do
             --draw turret
             if M.map[i][j].val == M.const.turret then
                 local img = turret[M.map[i][j].ttype].img
@@ -174,9 +180,9 @@ function M.draw()
                 love.graphics.setColor(255,255,255)
                 love.graphics.draw(rock.img,  (i-1)*chunkW, j*chunkH + rock.offsety,
                     0, rock.scalex, rock.scaley)
-
             end
         end
+        enemy.drawCreeps(j)
     end
 end
 

@@ -38,45 +38,45 @@ buttonSize = M.bottomBarHeight - 2 * buttonMargin
 buttonInnerSize = buttonSize - 2 * buttonPadding
 
 function drawButton(n,img)
-  love.graphics.setColor(55,55,55, 100)
-  love.graphics.rectangle("fill", buttonMargin + (n-1)*(buttonSize+buttonMargin),  love.graphics.getHeight() - buttonSize - buttonMargin, buttonSize, buttonSize)
+    love.graphics.setColor(55,55,55, 100)
+    love.graphics.rectangle("fill", buttonMargin + (n-1)*(buttonSize+buttonMargin),  love.graphics.getHeight() - buttonSize - buttonMargin, buttonSize, buttonSize)
 
-  local scale = 1/(img:getHeight()/buttonInnerSize)
+    local scale = 1/(img:getHeight()/buttonInnerSize)
 
-  offsetx =  - (buttonSize/scale - img:getWidth())/2
+    offsetx =  - (buttonSize/scale - img:getWidth())/2
 
-  local alpha
-  if M.buttons[n].hover == true or M.selectedTurretType == n then
-    alpha = 255
-  else
-    alpha = 200
-  end
-  love.graphics.setColor(255,255,255,alpha)
-  love.graphics.draw(img, buttonMargin + (n-1)*(buttonSize+buttonMargin),  love.graphics.getHeight() - buttonSize - buttonMargin + buttonPadding, 0, scale, scale, offsetx, 0)
+    local alpha
+    if M.buttons[n].hover == true or M.selectedTurretType == n then
+        alpha = 255
+    else
+        alpha = 200
+    end
+    love.graphics.setColor(255,255,255,alpha)
+    love.graphics.draw(img, buttonMargin + (n-1)*(buttonSize+buttonMargin),  love.graphics.getHeight() - buttonSize - buttonMargin + buttonPadding, 0, scale, scale, offsetx, 0)
 end
 
 function drawTopBar()
-  love.graphics.setColor(M.color.r, M.color.g, M.color.b, M.color.a)
-  love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), M.topBarHeight)
+    love.graphics.setColor(M.color.r, M.color.g, M.color.b, M.color.a)
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), M.topBarHeight)
 
-  local scale = 1/(goldIcon:getHeight()/M.topBarHeight)
-  love.graphics.draw(goldIcon, 0 , 0 , 0, scale, scale, 0, 0)
-  love.graphics.setColor(155,155,0)
-  love.graphics.setNewFont(35)
-  love.graphics.print(tostring(M.gold), 50 , 5, 0 )
+    local scale = 1/(goldIcon:getHeight()/M.topBarHeight)
+    love.graphics.draw(goldIcon, 0 , 0 , 0, scale, scale, 0, 0)
+    love.graphics.setColor(155,155,0)
+    love.graphics.setNewFont(35)
+    love.graphics.print(tostring(M.gold), 50 , 5, 0 )
 end
 
 function drawBottomBar()
-  love.graphics.setColor(M.color.r, M.color.g, M.color.b, M.color.a)
-  love.graphics.rectangle("fill", 0, love.graphics.getHeight() - M.bottomBarHeight, love.graphics.getWidth(), M.bottomBarHeight)
+    love.graphics.setColor(M.color.r, M.color.g, M.color.b, M.color.a)
+    love.graphics.rectangle("fill", 0, love.graphics.getHeight() - M.bottomBarHeight, love.graphics.getWidth(), M.bottomBarHeight)
 end
 
 function M.draw()
-  drawTopBar()
-  drawBottomBar()
-  for i,_ in pairs(M.buttons) do
-    drawButton(i,M.buttons[i].img)
-  end
+    drawTopBar()
+    drawBottomBar()
+    for i,_ in pairs(M.buttons) do
+        drawButton(i,M.buttons[i].img)
+    end
 end
 
 function M.mouseMoved(x, y)

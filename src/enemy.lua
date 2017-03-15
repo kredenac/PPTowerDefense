@@ -1,7 +1,8 @@
 local M={}
 
 M.img = love.graphics.newImage("img/enemy.png")
-M.creeps={}
+M.creeps = {}
+M.rows = {} -- IDs in each row
 M.step = 0.1
 local creep={}
 creep.health=1000
@@ -35,6 +36,8 @@ function M.targetEnemies()
             --inflict damage
             local dead = M.creeps[v]:inflictDamage(3)
             if dead then
+                 print(index)
+                 M.rows[M.creeps[v].posy][v] = nil
                  M.creeps[v] = nil
                  numCreeps = numCreeps - 1
                  gui.gold = gui.gold + creepValue
@@ -75,6 +78,13 @@ creepId = 1
 function M.spawnCreeps()
     local newCreep = copy(creep)
     M.creeps[creepId] = newCreep
+
+    if M.rows[creep.posy] == nil then
+      M.rows[creep.posy] = {}
+    end
+    M.rows[creep.posy][creepId] = true
+    -- table.insert(M.rows[creep.posy],creepId);
+
     creepId = creepId + 1
     numCreeps = numCreeps + 1
     --print(numCreeps)
@@ -100,9 +110,11 @@ function M.moveCreeps(key)
 
     -- print (dx,dy)
 
-    for _,i in pairs(M.creeps) do
+    for index,i in pairs(M.creeps) do
         local tryx = i.x + dx
         local tryy = i.y + dy
+
+        local oldPosY = i.posy;
 
         if tryx <= -1 then
             if i.posx - 1 >= 1 then
@@ -136,14 +148,35 @@ function M.moveCreeps(key)
             i.x = tryx
             i.y = tryy
         end
+
+        if i.posy ~= oldPosY then
+          if M.rows[i.posy] == nil then
+            M.rows[i.posy] = {}
+          end
+          M.rows[i.posy][index] = true
+          M.rows[oldPosY][index] = nil
+          -- table.insert(M.rows[i.posy],index)
+          -- table.remove(M.rows[oldPosY],index)
+          -- print(index)
+        end
     end
 end
 
-function M.drawCreeps()
+function M.drawCreeps(row)
     local hpBarAbove = 5
     local hpBarWidth = 30
     local scalex, scaley = 0.2, 0.2
-    for _,i in pairs(M.creeps) do
+
+    -- for _,i in pairs(M.creeps) do
+    if M.rows[row] == nil then
+        return
+    end
+    for index,a in pairs(M.rows[row]) do
+        i = M.creeps[index]
+        if i == nil then
+            return
+        end
+        -- print(a)
         local x = (i.posx-1 + i.x/2)*chunkW
         local y = gui.topBarHeight + (i.posy-1 + i.y/2)*chunkH
         --draw hp
@@ -154,5 +187,6 @@ function M.drawCreeps()
         love.graphics.setColor(255,255,255)
         love.graphics.draw(M.img, x, y, 0, scalex, scaley)
     end
+    -- print()
 end
 return M
