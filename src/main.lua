@@ -8,6 +8,7 @@ function love.load()
 	gui = require("gui")
 	map = require("map")
 	enemy = require("enemy")
+	astar = require("astar")
 
 	numRocks = 19
 	map.generateEmpty(19,10, numRocks)
@@ -22,26 +23,22 @@ function love.load()
 	love.audio.setVolume(musicVolume)
 	love.keyboard.setKeyRepeat(true)
 	love.graphics.setLineWidth(5)
-	randomMovementOn = true
+	--Ovako bi trebalo da se ispisuje mapa,sto ne radi zbog mesanja indexa, tj loseg generateEmpty
+	--Pise da je u mat.mat.height i width kao sto treba da bude, ali to nije stvarno slucaj
+-- 	for i=1, map.map.height do
+-- 		for j=1, map.map.width do
+-- 			io.write(map.map[i][j].val)
+-- 			io.write(" ")
+-- 		end
+-- 		print()
+-- 	end
+	
+
+	--astar.print()
 end
 
 function love.update(dt)
-	if randomMovementOn then
-		moveRandom()
-	end
-end
-
-moves = {}
-function moveRandom()
-	local move = {"w", "s", "a", "d"}
-	if moves[1]==nil then
-		local go = move[math.random(4)]
-		local times = math.random(10) + 3
-		for i=1,times do
-			table.insert(moves, go)
-		end
-	end
-	enemy.moveCreeps(table.remove(moves))
+	enemy.moveCreeps()
 end
 
 function love.draw()
@@ -116,17 +113,6 @@ end
 --callbacks koje updateuju da li je dugme pritisnuto ili ne
 
 function love.keypressed( key )
-   if key == "w" or key == "s" or key == "a" or key == "d" then
-      enemy.moveCreeps(key)
-   end
-	if key == "r" then
-		randomMovementOn = not randomMovementOn
-		if randomMovementOn then
-			enemy.step = 0.1
-		else
-			enemy.step = 0.33
-		end
-	end
    if key == "m" then
 	   musicVolume = -musicVolume  + 1
 	   print(musicVolume)
@@ -139,8 +125,34 @@ function love.keypressed( key )
 
    --for testing
    if key == "space" then
-	   enemy.spawnCreeps()
+	   --TODO srediti malo
+	   astar.init(map, 1, 19)
+	   creep = {}
+	   creep.posx=1
+	   creep.posy=1
+	   path = astar.calculatePath(creep, 1,19)
+	   enemy.spawnCreeps(path)
    end
+   
+--    if key == "p" then
+-- -- 	   io.write(astar.nodes.map.width)
+-- 	   	astar.init(map, 1, 19)
+-- 	   --astar.heuristic(1,19)
+-- 	   for i=1, astar.nodes.height do
+-- 		   for j=1, astar.nodes.width do
+-- 			   io.write(astar.nodes[i][j].h)
+-- 			   io.write(" ")
+-- 			end
+-- 			print()
+-- 	   end
+-- 	   
+-- 	   creep = {}
+-- 	   creep.posx=1
+-- 	   creep.posy=1
+-- 	   
+-- 	   astar.calculatePath(creep, 1,19)
+-- 		
+--    end
 end
 
 function love.keyreleased( key )

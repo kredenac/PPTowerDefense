@@ -1,6 +1,6 @@
 local M={}
 --M is a module table
-
+--FIXME: indeksiranje mape je lose, treba HEIGHTxWIDTH i  da se prolazi kroz mapu sa map[height][width]
 M.map = {}
 
 M.map.width = 0
@@ -101,10 +101,10 @@ end
 
 -- Generise praznu mapu
 -- postavlja chunkW i chunkH, sto je visina i sirina svakog pravougaonika
-function M.generateEmpty(width,height, numRocks)
-    for i=1,width do
+function M.generateEmpty(width, height, numRocks)
+    for i=1, width do
         M.map[i] = {}
-        for j=1,height do
+        for j=1, height do
             M.map[i][j] = {}
             --val je tip objekta
             M.map[i][j].val = M.const.empty
@@ -121,7 +121,9 @@ function generateRocks(w, h, n)
     for i=1, n do
         local x = math.random(w)
         local y = math.random(h)
-        M.map[x][y].val = M.const.rock
+		if not (x==1 and y==1) and not (x==w and y==1) then
+			M.map[x][y].val = M.const.rock
+		end
     end
 end
 -- Promeni boju chunka na hover
