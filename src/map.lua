@@ -36,6 +36,13 @@ function M.newTurret(i, j, type)
     newTurret.hp = 100
     newTurret.x = i
     newTurret.y = j
+    newTurret.dmg = turret[type].dmg
+
+    newTurret.effects = {}
+    for _,effect in pairs(turret[type].effects) do
+        table.insert(newTurret.effects,effect)
+    end
+
     newTurret.type = type
     table.insert(M.turrets, newTurret)
     gui.gold = gui.gold - turret[type].cost
@@ -58,11 +65,16 @@ M.turrets = {}
 
 turret = {}
 turret[1] = {}
-turret[2] = {}
 turret[1].img = fireTurretImg
-turret[2].img = frostTurretImg
 turret[1].cost = 50
+turret[1].dmg = 3
+turret[1].effects = {}
+
+turret[2] = {}
+turret[2].img = frostTurretImg
 turret[2].cost = 40
+turret[2].dmg = 1
+turret[2].effects = {"freeze"}
 
 turret[1].rayr = 255
 turret[1].rayg = 0
