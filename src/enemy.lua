@@ -13,6 +13,8 @@ creep.posy=1
 creep.x = 0
 creep.y = 0
 creep.dmg=10
+creep.path={}
+creep.chIndex=1
 numCreeps=0
 creepValue = 10
 --iscrtava nisan od kule do neprijatelja
@@ -75,9 +77,15 @@ function M.nearTower(i,j)
 end
 
 creepId = 1
-function M.spawnCreeps()
+function M.spawnCreeps(path)
     local newCreep = copy(creep)
     M.creeps[creepId] = newCreep
+	M.creeps[creepId].path = copy(path)
+	
+	for j=1, M.creeps[creepId].path.len do
+		--print(("I : %d"):format(j))
+		print(("X: %d, Y: %d"):format(M.creeps[creepId].path[j].x, M.creeps[creepId].path[j].y))
+	end
 
     if M.rows[creep.posy] == nil then
       M.rows[creep.posy] = {}
@@ -91,63 +99,65 @@ function M.spawnCreeps()
 end
 
 --samo za testiranje. treba da slusa 'naredjenja' od A*, a ne usr input
-function M.moveCreeps(key)
-    local dx, dy = 0, 0
+function M.moveCreeps()
     local step = M.step
-    -- print(key)
-    if key == "w" then
-  		dy = -step
-  	end
-    if key == "s" then
-  		dy = step
-  	end
-    if key == "a" then
-  		dx = -step
-  	end
-    if key == "d" then
-  		dx = step
-  	end
 
     -- print (dx,dy)
 
     for index,i in pairs(M.creeps) do
+		if i.path[i.chIndex].x > i.posx then
+			dx = step
+		elseif i.path[i.chIndex].x < i.posx then
+			dx = -step
+		else
+			dx = 0
+		end
+		
+		if i.path[i.chIndex].y > i.posy then
+			dy = step
+		elseif i.path[i.chIndex].y < i.posy then
+			dy = -step
+		else
+			dy = 0
+		end
+
         local tryx = i.x + dx
         local tryy = i.y + dy
 
         local oldPosY = i.posy;
 
-        if tryx <= -1 then
-            if i.posx - 1 >= 1 then
-                if map.map[i.posx - 1][i.posy].val == map.const.empty then
-                    i.posx = i.posx - 1
-                    i.x = 1 - step
-                end
-            end
-        elseif tryx >= 1 then
-            if i.posx + 1 <= map.map.width then
-                if map.map[i.posx + 1][i.posy].val == map.const.empty then
-                    i.posx = i.posx + 1
-                    i.x = -1 + step
-                end
-            end
-        elseif tryy >= 1 then
-            if i.posy + 1 <= map.map.height then
-                if map.map[i.posx][i.posy + 1].val == map.const.empty then
-                    i.posy = i.posy + 1
-                    i.y = -1 + step
-                end
-            end
-        elseif tryy <= -1 then
-            if i.posy - 1 >= 1 then
-                if map.map[i.posx][i.posy - 1].val == map.const.empty then
-                    i.posy = i.posy - 1
-                    i.y = 1 - step
-                end
-            end
-        else
+--         if tryx <= -1 then
+--             if i.posx - 1 >= 1 then
+--                 if map.map[i.posx - 1][i.posy].val == map.const.empty then
+--                     i.posx = i.posx - 1
+--                     i.x = 1 - step
+--                 end
+--             end
+--         elseif tryx >= 1 then
+--             if i.posx + 1 <= map.map.width then
+--                 if map.map[i.posx + 1][i.posy].val == map.const.empty then
+--                     i.posx = i.posx + 1
+--                     i.x = -1 + step
+--                 end
+--             end
+--         elseif tryy >= 1 then
+--             if i.posy + 1 <= map.map.height then
+--                 if map.map[i.posx][i.posy + 1].val == map.const.empty then
+--                     i.posy = i.posy + 1
+--                     i.y = -1 + step
+--                 end
+--             end
+--         elseif tryy <= -1 then
+--             if i.posy - 1 >= 1 then
+--                 if map.map[i.posx][i.posy - 1].val == map.const.empty then
+--                     i.posy = i.posy - 1
+--                     i.y = 1 - step
+--                 end
+--             end
+--         else
             i.x = tryx
             i.y = tryy
-        end
+--         end
 
         if i.posy ~= oldPosY then
           if M.rows[i.posy] == nil then
