@@ -1,4 +1,5 @@
 --drzite tab size na 4!!!
+--TODO indeksi
 function love.load()
 	love.window.setTitle("Defense of the Burek")
 	defaultWidth, defaultHeight = 1024, 768
