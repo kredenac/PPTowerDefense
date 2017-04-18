@@ -133,6 +133,7 @@ function love.keypressed( key )
 	   creep.posy=1
 	   path = astar.calculatePath(creep, 1,19)
 	   enemy.spawnCreeps(path)
+	   --enemy.moveCreeps()
    end
    
 --    if key == "p" then

@@ -105,70 +105,54 @@ function M.moveCreeps()
     -- print (dx,dy)
 
     for index,i in pairs(M.creeps) do
-		if i.path[i.chIndex].x > i.posx then
-			dx = step
-		elseif i.path[i.chIndex].x < i.posx then
-			dx = -step
-		else
-			dx = 0
+		if i.chIndex <= i.path.len then
+			if i.path[i.chIndex].y > i.posx then
+				dx = step
+			elseif i.path[i.chIndex].y < i.posx then
+				dx = -step
+			else
+				dx = 0
+			end
+			
+			if i.path[i.chIndex].x > i.posy then
+				dy = step
+			elseif i.path[i.chIndex].x < i.posy then
+				dy = -step
+			else
+				dy = 0
+			end
+
+			local tryx = i.x + dx
+			local tryy = i.y + dy
+
+			if tryx >= 2 then
+				tryx = 0
+				i.x = tryx
+				i.posx = i.posx+1
+				i.chIndex = i.chIndex+1
+			elseif tryx <= -2 then
+				tryx = 0
+				i.x = tryx
+				i.posx = i.posx-1
+				i.chIndex = i.chIndex+1
+			else
+				i.x = tryx
+			end
+			
+			if tryy >= 2 then
+				tryy = 0
+				i.y = tryy
+				i.posy = i.posy+1
+				i.chIndex = i.chIndex+1
+			elseif tryy <= -2 then
+				tryy = 0
+				i.y = tryy
+				i.posy = i.posy-1
+				i.chIndex = i.chIndex+1
+			else
+				i.y = tryy
+			end
 		end
-		
-		if i.path[i.chIndex].y > i.posy then
-			dy = step
-		elseif i.path[i.chIndex].y < i.posy then
-			dy = -step
-		else
-			dy = 0
-		end
-
-        local tryx = i.x + dx
-        local tryy = i.y + dy
-
-        local oldPosY = i.posy;
-
---         if tryx <= -1 then
---             if i.posx - 1 >= 1 then
---                 if map.map[i.posx - 1][i.posy].val == map.const.empty then
---                     i.posx = i.posx - 1
---                     i.x = 1 - step
---                 end
---             end
---         elseif tryx >= 1 then
---             if i.posx + 1 <= map.map.width then
---                 if map.map[i.posx + 1][i.posy].val == map.const.empty then
---                     i.posx = i.posx + 1
---                     i.x = -1 + step
---                 end
---             end
---         elseif tryy >= 1 then
---             if i.posy + 1 <= map.map.height then
---                 if map.map[i.posx][i.posy + 1].val == map.const.empty then
---                     i.posy = i.posy + 1
---                     i.y = -1 + step
---                 end
---             end
---         elseif tryy <= -1 then
---             if i.posy - 1 >= 1 then
---                 if map.map[i.posx][i.posy - 1].val == map.const.empty then
---                     i.posy = i.posy - 1
---                     i.y = 1 - step
---                 end
---             end
---         else
-            i.x = tryx
-            i.y = tryy
---         end
-
-        if i.posy ~= oldPosY then
-          if M.rows[i.posy] == nil then
-            M.rows[i.posy] = {}
-          end
-          M.rows[i.posy][index] = true
-          M.rows[oldPosY][index] = nil
-          -- table.insert(M.rows[i.posy],index)
-          -- table.remove(M.rows[oldPosY],index)
-          -- print(index)
-        end
     end
 end
 
