@@ -14,6 +14,7 @@ creep.x = 0
 creep.y = 0
 creep.dmg=10
 creep.path={}
+creep.effects={}
 creep.chIndex=1
 numCreeps=0
 creepValue = 10
@@ -22,21 +23,29 @@ function M.targetEnemies()
     local offsetx = chunkW / 2
     local offsety = chunkH / 2 + gui.topBarHeight
 
-    for _, v in pairs(map.turrets) do
-		local i, j = v.x, v.y
+    for _, turr in pairs(map.turrets) do
+		local i, j = turr.x, turr.y
 		local creeps = enemy.nearTower(i,j)
         local startx = (i-1)*chunkW + offsetx
         local starty = (j-1)*chunkH + offsety
 
-        col = turret[v.type]
+        col = turret[turr.type]
         love.graphics.setColor(col.rayr, col.rayg, col.rayb)
 		for _,v in pairs(creeps) do
             --draw ray
             local endx = (M.creeps[v].posx-1 + M.creeps[v].x/2)*chunkW + offsetx
             local endy = (M.creeps[v].posy-1 + M.creeps[v].y/2)*chunkH + offsety
 			love.graphics.line(startx, starty,endx, endy)
+
+            --add effect
+            for _,effect in pairs(turr.effects) do
+                M.creeps[v].effects[effect] = true
+                print(effect)
+                print(v)
+            end
+
             --inflict damage
-            local dead = M.creeps[v]:inflictDamage(3)
+            local dead = M.creeps[v]:inflictDamage(turr.dmg)
             if dead then
                  print(index)
                  M.rows[M.creeps[v].posy][v] = nil
@@ -81,11 +90,12 @@ function M.spawnCreeps(path)
     local newCreep = copy(creep)
     M.creeps[creepId] = newCreep
 	M.creeps[creepId].path = copy(path)
+    M.creeps[creepId].effects = {}
 
-	for j=1, M.creeps[creepId].path.len do
+	-- for j=1, M.creeps[creepId].path.len do
 		--print(("I : %d"):format(j))
 		-- print(("X: %d, Y: %d"):format(M.creeps[creepId].path[j].x, M.creeps[creepId].path[j].y))
-	end
+	-- end
 
     if M.rows[creep.posy] == nil then
       M.rows[creep.posy] = {}
@@ -119,6 +129,13 @@ function M.moveCreeps()
 			else
 				dy = 0
 			end
+
+            -- usporava zaledjenog
+            print(i.effects["freeze"])
+            if i.effects["freeze"] == true then
+              dx = dx/2
+              dy = dy/2
+            end
 
 			local tryx = i.x + dx
 			local tryy = i.y + dy
@@ -181,7 +198,14 @@ function M.drawCreeps(row)
         love.graphics.setColor(255*(1-hpPercent),255*hpPercent,0)
         love.graphics.line(x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
         --draw creep
+
+
         love.graphics.setColor(255,255,255)
+        if i.effects["freeze"] then
+            love.graphics.setColor(155,155,255)
+        end
+
+
         love.graphics.draw(M.img, x, y, 0, scalex, scaley)
     end
     -- print()
