@@ -81,21 +81,19 @@ function M.spawnCreeps(path)
     local newCreep = copy(creep)
     M.creeps[creepId] = newCreep
 	M.creeps[creepId].path = copy(path)
-	
+
 	for j=1, M.creeps[creepId].path.len do
 		--print(("I : %d"):format(j))
-		print(("X: %d, Y: %d"):format(M.creeps[creepId].path[j].x, M.creeps[creepId].path[j].y))
+		-- print(("X: %d, Y: %d"):format(M.creeps[creepId].path[j].x, M.creeps[creepId].path[j].y))
 	end
 
     if M.rows[creep.posy] == nil then
       M.rows[creep.posy] = {}
     end
     M.rows[creep.posy][creepId] = true
-    -- table.insert(M.rows[creep.posy],creepId);
 
     creepId = creepId + 1
     numCreeps = numCreeps + 1
-    --print(numCreeps)
 end
 
 --samo za testiranje. treba da slusa 'naredjenja' od A*, a ne usr input
@@ -113,7 +111,7 @@ function M.moveCreeps()
 			else
 				dx = 0
 			end
-			
+
 			if i.path[i.chIndex].x > i.posy then
 				dy = step
 			elseif i.path[i.chIndex].x < i.posy then
@@ -125,33 +123,38 @@ function M.moveCreeps()
 			local tryx = i.x + dx
 			local tryy = i.y + dy
 
-			if tryx >= 2 then
-				tryx = 0
-				i.x = tryx
-				i.posx = i.posx+1
+			if tryx >= 2 or tryx <= -2 then
+				if tryx >= 2 then
+                    i.posx = i.posx+1
+                else
+                    i.posx = i.posx-1
+                end
+                tryx = 0
 				i.chIndex = i.chIndex+1
-			elseif tryx <= -2 then
-				tryx = 0
-				i.x = tryx
-				i.posx = i.posx-1
+            end
+			i.x = tryx
+
+
+			if tryy >= 2 or tryy <= -2 then
+                -- brise se creep iz starog reda
+                M.rows[M.creeps[index].posy][index] = nil
+
+                if tryy >= 2 then
+                    i.posy = i.posy+1
+                else
+                    i.posy = i.posy-1
+                end
+                tryy = 0
+
+                -- upisuje se u novi red
+                if M.rows[i.posy] == nil then
+                  M.rows[i.posy] = {}
+                end
+                M.rows[i.posy][index] = true
+
 				i.chIndex = i.chIndex+1
-			else
-				i.x = tryx
 			end
-			
-			if tryy >= 2 then
-				tryy = 0
-				i.y = tryy
-				i.posy = i.posy+1
-				i.chIndex = i.chIndex+1
-			elseif tryy <= -2 then
-				tryy = 0
-				i.y = tryy
-				i.posy = i.posy-1
-				i.chIndex = i.chIndex+1
-			else
-				i.y = tryy
-			end
+			i.y = tryy
 		end
     end
 end
