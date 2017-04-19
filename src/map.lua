@@ -95,6 +95,14 @@ rock = {}
 rock.img = love.graphics.newImage("img/rock.png")
 background = {}
 background.img = love.graphics.newImage("img/sand.jpg")
+burek = {}
+burek.img = love.graphics.newImage("img/burek.png")
+burek.holylight= {}
+burek.holylight.img = love.graphics.newImage("img/holylight.png")
+burek.holylight.alphaBack = 255
+burek.holylight.alphaFront = 155
+burek.hp = 1000
+burek.fullHp = 1000
 screen = {}
 
 --update vars pri resize
@@ -116,6 +124,15 @@ function M.updateSize(topBar, bottomBar)
     turret.scalex = 1/(turret[1].img:getWidth()/chunkW)
     turret.scaley = 1/(turret[1].img:getHeight()/chunkH)*turretToChunkHeight
     turret.offsety = gui.topBarHeight - turret[1].img:getHeight()*turret.scaley
+    burek.scalex = 1/(burek.img:getWidth()/chunkW) * 2
+    burek.scaley = 1/(burek.img:getHeight()/chunkH)*rockToChunkHeight * turretToChunkHeight
+    burek.offsetx = -burek.scalex*burek.img:getWidth() / 2
+    burek.offsety = gui.topBarHeight - burek.img:getHeight()*burek.scaley
+    burek.holylight.scalex = 1/(burek.holylight.img:getWidth()/chunkW) * 3
+    burek.holylight.scaley = 1/(burek.holylight.img:getHeight()/chunkH)*rockToChunkHeight * 2.5
+    burek.holylight.offsetx = -burek.holylight.scalex*burek.holylight.img:getWidth() / 2
+    burek.holylight.offsety = gui.topBarHeight - burek.holylight.img:getHeight()*burek.holylight.scaley * 0.8
+    burek.holylight.backoffsety = gui.topBarHeight - burek.holylight.img:getHeight()*burek.holylight.scaley * 0.6
 end
 
 
@@ -134,6 +151,8 @@ function M.generateEmpty(width, height, numRocks)
     generateRocks(width, height, numRocks)
     M.map.width = width
     M.map.height = height
+    burek.posx = width
+    burek.posy = 1
     M.updateSize()
 end
 
@@ -206,6 +225,9 @@ function M.draw()
         end
         enemy.drawCreeps(j)
     end
+    -- love.graphics.draw(burek.img, (M.map.width-1)*chunkW + burek.offsetx,
+    -- (1)*chunkH + burek.offsety, 0, burek.scalex, burek.scaley)
+
 end
 
 --returning the module

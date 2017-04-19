@@ -54,6 +54,29 @@ function drawButton(n,img)
     love.graphics.setColor(255,255,255,alpha)
     love.graphics.draw(img, buttonMargin + (n-1)*(buttonSize+buttonMargin),  love.graphics.getHeight() - buttonSize - buttonMargin + buttonPadding, 0, scale, scale, offsetx, 0)
 end
+function drawBurek()
+    --ovde se iscrtava burek, da ga ne bi hud blokirao
+    love.graphics.setColor(255, 255, 255, burek.holylight.alphaBack)
+    love.graphics.draw(burek.holylight.img, (map.map.width-1)*chunkW + burek.holylight.offsetx,
+    (1)*chunkH + burek.holylight.backoffsety, 0, burek.holylight.scalex, burek.holylight.scaley)
+
+    love.graphics.setColor(255,255,255, 255)
+    love.graphics.draw(burek.img, (map.map.width-1)*chunkW + burek.offsetx,
+    (1)*chunkH + burek.offsety, 0, burek.scalex, burek.scaley)
+
+    love.graphics.setColor(255, 255, 100, burek.holylight.alphaFront)
+    love.graphics.draw(burek.holylight.img, (map.map.width-1)*chunkW + burek.holylight.offsetx,
+    (1)*chunkH + burek.holylight.offsety, 0, burek.holylight.scalex, burek.holylight.scaley)
+
+    --draw hp
+    local hpBarAbove = 5
+    local hpBarWidth = 100
+    local hpPercent = burek.hp / burek.fullHp
+    local x = (burek.posx-1)*chunkW + burek.offsetx
+    local y = burek.posy*chunkH + burek.offsety
+    love.graphics.setColor(255*(1-hpPercent), 255*hpPercent, 0)
+    love.graphics.line(x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
+end
 
 function drawTopBar()
     love.graphics.setColor(M.color.r, M.color.g, M.color.b, M.color.a)
@@ -64,6 +87,9 @@ function drawTopBar()
     love.graphics.setColor(155,155,0)
     love.graphics.setNewFont(35)
     love.graphics.print(tostring(M.gold), 50 , 5, 0 )
+
+    drawBurek()
+
 end
 
 function drawBottomBar()

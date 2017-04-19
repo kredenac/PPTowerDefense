@@ -193,10 +193,17 @@ function M.moveCreeps()
 				i.chIndex = i.chIndex+1
 			end
 			i.y = tryy
+            --print(("%d %d , burek %d %d"):format(i.posx, i.posy, burek.posx, burek.posy))
+            damageBurek(i)
+
 		end
     end
 end
-
+function damageBurek(creep)
+    if creep.posx == burek.posx and creep.posy == burek.posy then
+        burek.hp = burek.hp - 100
+    end
+end
 function M.drawCreeps(row)
     local hpBarAbove = 5
     local hpBarWidth = 30
