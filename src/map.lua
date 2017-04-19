@@ -72,30 +72,43 @@ turret[1].cost = 50
 turret[1].dmg = 3
 turret[1].range = 1
 turret[1].targetNum = 1
+turret[1].rayr = 255
+turret[1].rayg = 0
+turret[1].rayb = 0
 turret[1].effects = {}
 turret[1].effects["burn"] = {}
     turret[1].effects["burn"]["duration"] = 150
-    turret[1].effects["burn"]["dot"] = 2
+    turret[1].effects["burn"]["dot"] = 1
 
 turret[2] = {}
 turret[2].img = frostTurretImg
-turret[2].cost = 40
+turret[2].cost = 60
 turret[2].dmg = 1
 turret[2].range = 2
 turret[2].targetNum = 2
+turret[2].rayr = 150
+turret[2].rayg = 200
+turret[2].rayb = 255
 turret[2].effects = {}
 turret[2].effects["freeze"] = {}
     turret[2].effects["freeze"]["duration"] = 50
     turret[2].effects["freeze"]["slow"] = .5
 
+turret[3] = {}
+turret[3].img = fireTurretImg -- split
+turret[3].cost = 100
+turret[3].dmg = 2
+turret[3].range = 1
+turret[3].targetNum = -1 -- inf
+turret[3].rayr = 0
+turret[3].rayg = 255
+turret[3].rayb = 0
+turret[3].effects = {}
 
-turret[1].rayr = 255
-turret[1].rayg = 0
-turret[1].rayb = 0
 
-turret[2].rayr = 150
-turret[2].rayg = 200
-turret[2].rayb = 255
+
+
+
 
 rock = {}
 rock.img = love.graphics.newImage("img/rock.png")

@@ -19,15 +19,22 @@ M.buttons = {}
 M.buttons[1] = {}
 M.buttons[2] = {}
 M.buttons[3] = {}
+M.buttons[4] = {}
+
 M.buttons[1].img = fireTurretImg
 M.buttons[2].img = frostTurretImg
-M.buttons[3].img = enemyImg
+M.buttons[3].img = fireTurretImg
+M.buttons[4].img = enemyImg
+
 M.buttons[1].cursor = fireTurretImg
 M.buttons[2].cursor = frostTurretImg
-M.buttons[3].cursor = enemyImg
+M.buttons[3].cursor = fireTurretImg
+M.buttons[4].cursor = enemyImg
+
 M.buttons[1].hover = false
 M.buttons[2].hover = false
 M.buttons[3].hover = false
+M.buttons[4].hover = false
 -- TODO samo jedan moze biti hoverovan, nema potreba za ovoliko boolova
 
 M.selectedTurretType = 0
@@ -135,7 +142,7 @@ function M.mousePressed(x, y, button)
         end
     end
     --ako je kliknuto nesto sto nije turret
-    if M.selectedTurretType ~= 1 and M.selectedTurretType ~=2 then
+    if M.selectedTurretType ~= 1 and M.selectedTurretType ~=2 and M.selectedTurretType ~=3 then
         M.selectedTurretType = 0
     end
 end
