@@ -1,6 +1,7 @@
 local M={}
 
 M.img = love.graphics.newImage("img/enemy.png")
+M.burn = love.graphics.newImage("img/burn.png") -- TODO prebaci ovo u turret
 M.creeps = {}
 M.rows = {} -- IDs in each row
 M.step = 0.1
@@ -37,17 +38,19 @@ function M.targetEnemies()
             local endy = (M.creeps[v].posy-1 + M.creeps[v].y/2)*chunkH + offsety
 			love.graphics.line(startx, starty,endx, endy)
 
-            --add effect
-            for _,effect in pairs(turr.effects) do
-                M.creeps[v].effects[effect] = true
-                print(effect)
-                print(v)
+            --add effects
+            for effect,val in pairs(turr.effects) do
+                if M.creeps[v].effects[effect] == nil then
+                    M.creeps[v].effects[effect] = {}
+                end
+                for a,b in pairs(val) do
+                    M.creeps[v].effects[effect][a] = b
+                end
             end
 
             --inflict damage
             local dead = M.creeps[v]:inflictDamage(turr.dmg)
             if dead then
-                 print(index)
                  M.rows[M.creeps[v].posy][v] = nil
                  M.creeps[v] = nil
                  numCreeps = numCreeps - 1
@@ -130,11 +133,29 @@ function M.moveCreeps()
 				dy = 0
 			end
 
-            -- usporava zaledjenog
-            print(i.effects["freeze"])
-            if i.effects["freeze"] == true then
-              dx = dx/2
-              dy = dy/2
+            if i.effects["freeze"]~=nil then
+                if i.effects["freeze"]["duration"] > 0 then
+                    print(i.effects["freeze"]["slow"])
+                    dx = dx*i.effects["freeze"]["slow"]
+                    dy = dy*i.effects["freeze"]["slow"]
+                    i.effects["freeze"]["duration"] = i.effects["freeze"]["duration"] - 1 -- FIXME: mozda ne bas -1
+                end
+            end
+
+            if i.effects["burn"]~=nil then
+                if i.effects["burn"]["duration"] > 0 then
+                    i.effects["burn"]["duration"] = i.effects["burn"]["duration"] - 1 -- FIXME: mozda ne bas -1
+                    print(i.effects["burn"]["dot"])
+                    dead = i:inflictDamage(i.effects["burn"]["dot"])
+                    -- TODO prebaci ovo u funkciju, pojavljuje se na 2 mesta
+                    if dead then
+                         M.rows[M.creeps[index].posy][index] = nil
+                         M.creeps[index] = nil
+                         numCreeps = numCreeps - 1
+                         gui.gold = gui.gold + creepValue
+                         -- TODO kad umre da iskoci + (gold) iznad njega
+                    end
+                end
             end
 
 			local tryx = i.x + dx
@@ -193,20 +214,28 @@ function M.drawCreeps(row)
         -- print(a)
         local x = (i.posx-1 + i.x/2)*chunkW
         local y = gui.topBarHeight + (i.posy-1 + i.y/2)*chunkH
+
+        --draw creep
+        love.graphics.setColor(255,255,255)
+        if i.effects["freeze"]~=nil then
+            if i.effects["freeze"]["duration"] > 0 then
+                love.graphics.setColor(155,155,255)
+            end
+        end
+
+        love.graphics.setColor(255,255,255)
+        if i.effects["burn"]~=nil then
+            if i.effects["burn"]["duration"] > 0 then
+                love.graphics.draw(M.burn, x-10, y-35, 0, 1, 1)
+            end
+        end
+        love.graphics.draw(M.img, x, y, 0, scalex, scaley)
+
+
         --draw hp
         local hpPercent = i.health / creep.health
         love.graphics.setColor(255*(1-hpPercent),255*hpPercent,0)
         love.graphics.line(x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
-        --draw creep
-
-
-        love.graphics.setColor(255,255,255)
-        if i.effects["freeze"] then
-            love.graphics.setColor(155,155,255)
-        end
-
-
-        love.graphics.draw(M.img, x, y, 0, scalex, scaley)
     end
     -- print()
 end

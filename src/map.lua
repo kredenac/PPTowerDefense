@@ -39,8 +39,8 @@ function M.newTurret(i, j, type)
     newTurret.dmg = turret[type].dmg
 
     newTurret.effects = {}
-    for _,effect in pairs(turret[type].effects) do
-        table.insert(newTurret.effects,effect)
+    for effect,val in pairs(turret[type].effects) do
+        newTurret.effects[effect] = val
     end
 
     newTurret.type = type
@@ -69,16 +69,24 @@ turret[1].img = fireTurretImg
 turret[1].cost = 50
 turret[1].dmg = 3
 turret[1].effects = {}
+turret[1].effects["burn"] = {}
+    turret[1].effects["burn"]["duration"] = 150
+    turret[1].effects["burn"]["dot"] = 2
 
 turret[2] = {}
 turret[2].img = frostTurretImg
 turret[2].cost = 40
 turret[2].dmg = 1
-turret[2].effects = {"freeze"}
+turret[2].effects = {}
+turret[2].effects["freeze"] = {}
+    turret[2].effects["freeze"]["duration"] = 50
+    turret[2].effects["freeze"]["slow"] = .5
+
 
 turret[1].rayr = 255
 turret[1].rayg = 0
 turret[1].rayb = 0
+
 turret[2].rayr = 150
 turret[2].rayg = 200
 turret[2].rayb = 255

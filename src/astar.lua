@@ -59,7 +59,7 @@ end
 function neighbours(x, y)
 	local nNodes = {}
 	local i = 1
-	if x-1 >= 1 then 
+	if x-1 >= 1 then
 		if M.nodes[x-1][y].val == M.walkable then
 			--print("usao")
 			nNodes[i] = {}
@@ -72,7 +72,7 @@ function neighbours(x, y)
 			i = i+1
 		end
 	end
-	if y-1 >= 1 then 
+	if y-1 >= 1 then
 		if M.nodes[x][y-1].val == M.walkable then
 			nNodes[i] = {}
 			nNodes[i].x = x
@@ -84,7 +84,7 @@ function neighbours(x, y)
 			i = i+1
 		end
 	end
-	if x+1 <= M.nodes.height then 
+	if x+1 <= M.nodes.height then
 		if M.nodes[x+1][y].val == M.walkable then
 			nNodes[i] = {}
 			nNodes[i].x = x+1
@@ -108,7 +108,7 @@ function neighbours(x, y)
 			i = i+1
 		end
 	end
-	
+
 	return nNodes
 end
 
@@ -130,7 +130,7 @@ function insertHeap(list, n, element)
 		p = nil
 		i = i2
 	end
-	
+
 	return n
 end
 
@@ -182,7 +182,7 @@ function popHeap(list, n)
 			end
 		end
 	end
-	
+
 	return n
 end
 
@@ -223,14 +223,14 @@ function M.calculatePath(creep, endX, endY)
 -- 		for s, z in pairs(currentList) do
 -- 			print(("Key: %d, x: %d y: %d, h+dist: %d\n"):format(s, z.x, z.y, z.h+z.dist))
 -- 		end
-		
+
 		node = copy(currentList[1])
 		M.nodes[node.x][node.y] = copy(node)
 		n = popHeap(currentList, n)
-		
+
 		if closedList[node.x][node.y] ~= 1 then
 			closedList[node.x][node.y] = 1
-			
+
 			for k, v in pairs(neighbours(node.x, node.y)) do
 				if closedList[v.x][v.y] ~= 1 then
 					i = inHeap(currentList, v)
@@ -241,7 +241,7 @@ function M.calculatePath(creep, endX, endY)
 							currentList[i].parentY = node.y
 						--rebalance
 							while i > 1 do
-								
+
 								i2 = math.floor(i/2)
 								if currentList[i].dist + currentList[i].h > currentList[i2].dist + currentList[i2].h then
 									break
@@ -262,13 +262,13 @@ function M.calculatePath(creep, endX, endY)
 			end
 		end
 	end
-	print("------------------------------------------------------------------------")
+	-- print("------------------------------------------------------------------------")
 	M.nodes[endX][endY].dist = currentList[1].dist
 	M.nodes[endX][endY].parentX = currentList[1].parentX
 	M.nodes[endX][endY].parentY = currentList[1].parentY
 	--print(("X: %d, Y: %d"):format(M.nodes[endX][endY].x, M.nodes[endX][endY].y))
 	n = popHeap(currentList, n)
-	
+
 	path = {}
 	pathR = {}
 	i = 1
@@ -276,15 +276,15 @@ function M.calculatePath(creep, endX, endY)
 	pY = endY
 	--print(("px : %d, py : %d"):format(pX,pY))
 	--pravi path
-	while pX ~= creep.posx or pY ~= creep.posy do 
-		path[i] = {} 
+	while pX ~= creep.posx or pY ~= creep.posy do
+		path[i] = {}
 		path[i].x = pX
 		path[i].y = pY
 		pX = M.nodes[pX][pY].parentX
 		pY = M.nodes[path[i].x][pY].parentY
 		i = i+1
 	end
-	
+
 -- 	for j=1, i-1 do
 -- 		--print(("I : %d"):format(j))
 -- 		print(("X: %d, Y: %d"):format(path[j].x, path[j].y))
@@ -293,9 +293,9 @@ function M.calculatePath(creep, endX, endY)
 		pathR[j] = copy(path[i-j])
 		--print(("X: %d, Y: %d"):format(pathR[j].x, pathR[j].y))
 	end
-	
+
 	pathR.len = i-1
-	
+
 	return pathR
 end
 
