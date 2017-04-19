@@ -26,7 +26,7 @@ function M.targetEnemies()
 
     for _, turr in pairs(map.turrets) do
 		local i, j = turr.x, turr.y
-		local creeps = enemy.nearTower(i,j)
+		local creeps = enemy.inRange(i,j,turr.range,turr.targetNum)
         local startx = (i-1)*chunkW + offsetx
         local starty = (j-1)*chunkH + offsety
 
@@ -34,6 +34,7 @@ function M.targetEnemies()
         love.graphics.setColor(col.rayr, col.rayg, col.rayb)
 		for _,v in pairs(creeps) do
             --draw ray
+
             local endx = (M.creeps[v].posx-1 + M.creeps[v].x/2)*chunkW + offsetx
             local endy = (M.creeps[v].posy-1 + M.creeps[v].y/2)*chunkH + offsety
 			love.graphics.line(startx, starty,endx, endy)
@@ -78,11 +79,15 @@ end
 
 --prolazi kroz sve kripove i gleda da l su blizu kule
 --moze se optimizovati ako se cuvaju svi kripovi u odredjenom polju
-function M.nearTower(i,j)
+function M.inRange(i,j,range,n)
     local result = {}
     for k,v in pairs(M.creeps) do
-        if math.abs(v.posx - i) <=1 and math.abs(v.posy - j) <=1 then
+        if math.abs(v.posx - i) <=range and math.abs(v.posy - j) <=range then
             table.insert(result, k)
+            n = n-1
+        end
+        if n == 0 then
+            break;
         end
     end
     return result
