@@ -33,7 +33,7 @@ function love.load()
 -- 		end
 -- 		print()
 -- 	end
-	
+
 
 	--astar.print()
 end
@@ -45,7 +45,7 @@ end
 function love.draw()
 	map.draw()
 
-	enemy.targetEnemies()
+	enemy.targetEnemies() -- TODO zar ne treba deo da se pomeri u update
 
 	gui.draw()
 	drawMouse(mouseImg)
@@ -135,7 +135,7 @@ function love.keypressed( key )
 	   enemy.spawnCreeps(path)
 	   --enemy.moveCreeps()
    end
-   
+
 --    if key == "p" then
 -- -- 	   io.write(astar.nodes.map.width)
 -- 	   	astar.init(map, 1, 19)
@@ -147,13 +147,13 @@ function love.keypressed( key )
 -- 			end
 -- 			print()
 -- 	   end
--- 	   
+--
 -- 	   creep = {}
 -- 	   creep.posx=1
 -- 	   creep.posy=1
--- 	   
+--
 -- 	   astar.calculatePath(creep, 1,19)
--- 		
+--
 --    end
 end
 

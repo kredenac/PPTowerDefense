@@ -180,7 +180,10 @@ function M.moveCreeps()
 
 			if tryy >= 2 or tryy <= -2 then
                 -- brise se creep iz starog reda
-                M.rows[M.creeps[index].posy][index] = nil
+
+                if M.creeps[index] then -- HACK dal prvo umre pa pokusa da se pomeri, ugl desi se da program pukne bez ove linije
+                    M.rows[M.creeps[index].posy][index] = nil
+                end
 
                 if tryy >= 2 then
                     i.posy = i.posy+1

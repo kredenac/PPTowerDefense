@@ -12,29 +12,27 @@ M.bottomBarHeight = 150
 goldIcon = love.graphics.newImage("img/gold.png")
 M.gold = 1000
 
-fireTurretImg = love.graphics.newImage("img/turret.png")
-frostTurretImg = love.graphics.newImage("img/frostTurret.png")
 enemyImg = love.graphics.newImage("img/enemy.png")
+
+turrets = require("turrets")
+
 M.buttons = {}
-M.buttons[1] = {}
-M.buttons[2] = {}
-M.buttons[3] = {}
-M.buttons[4] = {}
 
-M.buttons[1].img = fireTurretImg
-M.buttons[2].img = frostTurretImg
-M.buttons[3].img = fireTurretImg
-M.buttons[4].img = enemyImg
+for index, turret in pairs(turrets.turret) do
 
-M.buttons[1].cursor = fireTurretImg
-M.buttons[2].cursor = frostTurretImg
-M.buttons[3].cursor = fireTurretImg
-M.buttons[4].cursor = enemyImg
+    M.buttons[index] = {}
+    M.buttons[index].img = turret.img
+    M.buttons[index].cursor = turret.img
+    M.buttons[index].hover = false
+    buttonNum = index
+end
+buttonNum = buttonNum+1
 
-M.buttons[1].hover = false
-M.buttons[2].hover = false
-M.buttons[3].hover = false
-M.buttons[4].hover = false
+M.buttons[buttonNum] = {}
+M.buttons[buttonNum].img = enemyImg
+M.buttons[buttonNum].cursor = enemyImg
+M.buttons[buttonNum].hover = false
+
 -- TODO samo jedan moze biti hoverovan, nema potreba za ovoliko boolova
 
 M.selectedTurretType = 0
@@ -115,7 +113,7 @@ end
 function M.mouseMoved(x, y)
     mouseX, mouseY = x, y
     isy = mouseY > love.graphics.getHeight() - buttonSize - buttonMargin and mouseY < love.graphics.getHeight() - buttonMargin
-    for i=1, 3 do
+    for i=1, buttonNum do
         isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize+buttonMargin)
         if isx and isy then
             M.buttons[i].hover = true
@@ -128,7 +126,7 @@ end
 function M.mousePressed(x, y, button)
     mouseX, mouseY = x, y
     isy = mouseY > love.graphics.getHeight() - buttonSize - buttonMargin and mouseY < love.graphics.getHeight() - buttonMargin
-    for i=1, 3 do
+    for i=1, buttonNum-1 do
         isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize+buttonMargin)
 
         if isx and isy then
@@ -142,7 +140,13 @@ function M.mousePressed(x, y, button)
         end
     end
     --ako je kliknuto nesto sto nije turret
-    if M.selectedTurretType ~= 1 and M.selectedTurretType ~=2 and M.selectedTurretType ~=3 then
+    selected = false
+    for i=1,buttonNum-1 do
+        if M.selectedTurretType ~= i then
+            selected = true
+        end
+    end
+    if selected == false  then
         M.selectedTurretType = 0
     end
 end
