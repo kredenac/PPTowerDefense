@@ -37,8 +37,12 @@ function M.newTurret(i, j, type)
     newTurret.x = i
     newTurret.y = j
     newTurret.dmg = turret[type].dmg
+    newTurret.cooldown = turret[type].cooldown
+    newTurret.currCooldown = turret[type].cooldown
     newTurret.range = turret[type].range
     newTurret.targetNum = turret[type].targetNum
+    newTurret.drawingTime = 10
+    newTurret.currDrawingTime = newTurret.drawingTime
 
     newTurret.effects = {}
     for effect,val in pairs(turret[type].effects) do
@@ -99,9 +103,11 @@ function M.updateSize(topBar, bottomBar)
     rock.scalex = 1/(rock.img:getWidth()/chunkW)
     rock.scaley = 1/(rock.img:getHeight()/chunkH)*rockToChunkHeight
     rock.offsety = gui.topBarHeight - rock.img:getHeight()*rock.scaley
+    
     turret.scalex = 1/(turret[1].img:getWidth()/chunkW)
     turret.scaley = 1/(turret[1].img:getHeight()/chunkH)*turretToChunkHeight
     turret.offsety = gui.topBarHeight - turret[1].img:getHeight()*turret.scaley
+
     burek.scalex = 1/(burek.img:getWidth()/chunkW) * 2
     burek.scaley = 1/(burek.img:getHeight()/chunkH)*rockToChunkHeight * turretToChunkHeight
     burek.offsetx = -burek.scalex*burek.img:getWidth() / 2
@@ -138,7 +144,7 @@ function generateRocks(w, h, n)
     for i=1, n do
         local x = math.random(w)
         local y = math.random(h)
-		if not (x==1 and y==1) and not (x==w and y==1) then
+		if not (x==1 and y==1) and not ((x==w or x==w-1) and (y==1 or y==2)) then
 			M.map[x][y].val = M.const.rock
 		end
     end

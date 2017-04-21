@@ -63,22 +63,22 @@ function drawBurek()
     --ovde se iscrtava burek, da ga ne bi hud blokirao
     love.graphics.setColor(255, 255, 255, burek.holylight.alphaBack)
     love.graphics.draw(burek.holylight.img, (map.map.width-1)*chunkW + burek.holylight.offsetx,
-    (1)*chunkH + burek.holylight.backoffsety, 0, burek.holylight.scalex, burek.holylight.scaley)
+    (2)*chunkH + burek.holylight.backoffsety, 0, burek.holylight.scalex, burek.holylight.scaley)
 
     love.graphics.setColor(255,255,255, 255)
     love.graphics.draw(burek.img, (map.map.width-1)*chunkW + burek.offsetx,
-    (1)*chunkH + burek.offsety, 0, burek.scalex, burek.scaley)
+    (2)*chunkH + burek.offsety, 0, burek.scalex, burek.scaley)
 
     love.graphics.setColor(255, 255, 100, burek.holylight.alphaFront)
     love.graphics.draw(burek.holylight.img, (map.map.width-1)*chunkW + burek.holylight.offsetx,
-    (1)*chunkH + burek.holylight.offsety, 0, burek.holylight.scalex, burek.holylight.scaley)
+    (2)*chunkH + burek.holylight.offsety, 0, burek.holylight.scalex, burek.holylight.scaley)
 
     --draw hp
     local hpBarAbove = 5
     local hpBarWidth = 100
     local hpPercent = burek.hp / burek.fullHp
     local x = (burek.posx-1)*chunkW + burek.offsetx
-    local y = burek.posy*chunkH + burek.offsety
+    local y = burek.posy*1.9*chunkH + burek.offsety
     love.graphics.setColor(255*(1-hpPercent), 255*hpPercent, 0)
     love.graphics.line(x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
 end

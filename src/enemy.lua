@@ -9,7 +9,7 @@ local creep={}
 creep.health=1000
 --coords chunka
 creep.posx=1
-creep.posy=1
+creep.posy=10 -- TODO sredi negde drugo
 --pozicija u chunku
 creep.x = 0
 creep.y = 0
@@ -21,50 +21,85 @@ numCreeps=0
 creepValue = 10
 --iscrtava nisan od kule do neprijatelja
 function M.targetEnemies()
-    local offsetx = chunkW / 2
-    local offsety = chunkH / 2 + gui.topBarHeight
+    -- local offsetx = chunkW / 2
+    -- local offsety = chunkH / 2 + gui.topBarHeight
 
     for _, turr in pairs(map.turrets) do
 		local i, j = turr.x, turr.y
 		local creeps = enemy.inRange(i,j,turr.range,turr.targetNum)
-        local startx = (i-1)*chunkW + offsetx
-        local starty = (j-1)*chunkH + offsety
 
-        col = turret[turr.type]
-        love.graphics.setColor(col.rayr, col.rayg, col.rayb)
+        turr.targets = {} -- FIXME skupo al boze moj. Racuna targete svaki put
+
+        -- if turr.currCooldown == nil then
+        --     print("AAA")
+        --     turr.currCooldown = turr.cooldown
+        -- end
+
+        turr.currCooldown = turr.currCooldown-1
+        turr.currDrawingTime = turr.currDrawingTime-1
+
+
 		for _,v in pairs(creeps) do
-            --draw ray
 
-            local endx = (M.creeps[v].posx-1 + M.creeps[v].x/2)*chunkW + offsetx
-            local endy = (M.creeps[v].posy-1 + M.creeps[v].y/2)*chunkH + offsety
-			love.graphics.line(startx, starty,endx, endy)
+            turr.targets[v] = true
 
-            --add effects
-            for effect,val in pairs(turr.effects) do
-                if M.creeps[v].effects[effect] == nil then
-                    M.creeps[v].effects[effect] = {}
+            if turr.currCooldown <= 0 then
+                turr.currCooldown = turr.cooldown
+                turr.currDrawingTime = turr.drawingTime
+
+                --add effects
+                for effect,val in pairs(turr.effects) do
+                    if M.creeps[v].effects[effect] == nil then
+                        M.creeps[v].effects[effect] = {}
+                    end
+                    for a,b in pairs(val) do
+                        M.creeps[v].effects[effect][a] = b
+                    end
                 end
-                for a,b in pairs(val) do
-                    M.creeps[v].effects[effect][a] = b
+
+                --inflict damage
+                local dead = M.creeps[v]:inflictDamage(turr.dmg)
+                if dead then
+                     M.rows[M.creeps[v].posy][v] = nil
+                     M.creeps[v] = nil
+                     numCreeps = numCreeps - 1
+                     gui.gold = gui.gold + creepValue
+                     -- TODO kad umre da iskoci + (gold) iznad njega
                 end
             end
-
-            --inflict damage
-            local dead = M.creeps[v]:inflictDamage(turr.dmg)
-            if dead then
-                 M.rows[M.creeps[v].posy][v] = nil
-                 M.creeps[v] = nil
-                 numCreeps = numCreeps - 1
-                 gui.gold = gui.gold + creepValue
-                 -- TODO kad umre da iskoci + (gold) iznad njega
-            end
-		end
+        end
 	end
 end
 
 function creep:inflictDamage(dmg)
     self.health = self.health - dmg
     return self.health <= 0
+end
+
+function M.drawRays()
+    for index,turr in pairs(map.turrets) do
+        if turr.currDrawingTime >= 0 then
+            local i, j = turr.x, turr.y
+
+            local offsetx = chunkW / 2
+            local offsetStarty = - chunkH / 4 + gui.topBarHeight
+            local offsety = chunkH / 2 + gui.topBarHeight
+
+            local startx = (i-1)*chunkW + offsetx
+            local starty = (j-1)*chunkH + offsetStarty
+
+            col = turret[turr.type]
+            love.graphics.setColor(col.rayr, col.rayg, col.rayb)
+
+            for v,target in pairs(turr.targets) do
+                if M.creeps[v] ~= nil then
+                    local endx = (M.creeps[v].posx-1 + M.creeps[v].x/2)*chunkW + offsetx
+                    local endy = (M.creeps[v].posy-1 + M.creeps[v].y/2)*chunkH + offsety
+                    love.graphics.line(startx, starty,endx, endy)
+                end
+            end
+        end
+    end
 end
 
 -- shallow-copy tabele, samo copy paste vrednosti
@@ -108,6 +143,7 @@ function M.spawnCreeps(path)
     if M.rows[creep.posy] == nil then
       M.rows[creep.posy] = {}
     end
+
     M.rows[creep.posy][creepId] = true
 
     creepId = creepId + 1
@@ -147,22 +183,6 @@ function M.moveCreeps()
                 end
             end
 
-            if i.effects["burn"]~=nil then
-                if i.effects["burn"]["duration"] > 0 then
-                    i.effects["burn"]["duration"] = i.effects["burn"]["duration"] - 1 -- FIXME: mozda ne bas -1
-                    print(i.effects["burn"]["dot"])
-                    dead = i:inflictDamage(i.effects["burn"]["dot"])
-                    -- TODO prebaci ovo u funkciju, pojavljuje se na 2 mesta
-                    if dead then
-                         M.rows[M.creeps[index].posy][index] = nil
-                         M.creeps[index] = nil
-                         numCreeps = numCreeps - 1
-                         gui.gold = gui.gold + creepValue
-                         -- TODO kad umre da iskoci + (gold) iznad njega
-                    end
-                end
-            end
-
 			local tryx = i.x + dx
 			local tryy = i.y + dy
 
@@ -181,9 +201,9 @@ function M.moveCreeps()
 			if tryy >= 2 or tryy <= -2 then
                 -- brise se creep iz starog reda
 
-                if M.creeps[index] then -- HACK dal prvo umre pa pokusa da se pomeri, ugl desi se da program pukne bez ove linije
+                -- if M.creeps[index] then -- HACK dal prvo umre pa pokusa da se pomeri, ugl desi se da program pukne bez ove linije
                     M.rows[M.creeps[index].posy][index] = nil
-                end
+                -- end
 
                 if tryy >= 2 then
                     i.posy = i.posy+1
@@ -202,16 +222,41 @@ function M.moveCreeps()
 			end
 			i.y = tryy
             --print(("%d %d , burek %d %d"):format(i.posx, i.posy, burek.posx, burek.posy))
-            damageBurek(i)
+
+
+            if i.effects["burn"]~=nil then
+                if i.effects["burn"]["duration"] > 0 then
+                    i.effects["burn"]["duration"] = i.effects["burn"]["duration"] - 1 -- FIXME: mozda ne bas -1
+                    print(i.effects["burn"]["dot"])
+                    dead = i:inflictDamage(i.effects["burn"]["dot"])
+                    -- TODO prebaci ovo u funkciju, pojavljuje se na 2 mesta
+                    if dead then
+                         M.rows[M.creeps[index].posy][index] = nil
+                         M.creeps[index] = nil
+                         numCreeps = numCreeps - 1
+                         gui.gold = gui.gold + creepValue
+                         -- TODO kad umre da iskoci + (gold) iznad njega
+                    end
+                end
+            end
+
+            damageBurek(i,index)
 
 		end
     end
 end
-function damageBurek(creep)
-    if creep.posx == burek.posx and creep.posy == burek.posy then
+
+function damageBurek(creep,index)
+    if (creep.posx == burek.posx or creep.posx == burek.posx-1) and
+       (creep.posy == burek.posy or creep.posy == burek.posy+1) then
+
         burek.hp = burek.hp - 100
+        M.rows[creep.posy] [index] = nil
+        M.creeps[index] = nil
+        numCreeps = numCreeps - 1
     end
 end
+
 function M.drawCreeps(row)
     local hpBarAbove = 5
     local hpBarWidth = 30
@@ -238,7 +283,6 @@ function M.drawCreeps(row)
             end
         end
 
-        love.graphics.setColor(255,255,255)
         if i.effects["burn"]~=nil then
             if i.effects["burn"]["duration"] > 0 then
                 love.graphics.draw(M.burn, x-10, y-35, 0, 1, 1)

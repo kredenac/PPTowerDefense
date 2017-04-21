@@ -39,13 +39,15 @@ function love.load()
 end
 
 function love.update(dt)
+	enemy.targetEnemies(dt)
 	enemy.moveCreeps()
+
 end
 
 function love.draw()
 	map.draw()
-
-	enemy.targetEnemies() -- TODO zar ne treba deo da se pomeri u update
+	enemy.drawRays()
+	 -- TODO zar ne treba deo da se pomeri u update
 
 	gui.draw()
 	drawMouse(mouseImg)
@@ -129,9 +131,10 @@ function love.keypressed( key )
 	   --TODO srediti malo
 	   astar.init(map, 1, 19)
 	   creep = {}
-	   creep.posx=1
+	   creep.posx=10
 	   creep.posy=1
 	   path = astar.calculatePath(creep, 1,19)
+	--    astar.print()
 	   enemy.spawnCreeps(path)
 	   --enemy.moveCreeps()
    end

@@ -15,7 +15,7 @@ function copy (t)
 end
 -- u mainu kao parametar map
 function M.init(map, endX, endY)
-	--TODO:Ovaj deo izbaciti kada se sredi indeksiranje u map i main i zameniti sa prvim zakomentarisanim delom ispod
+	-- TODO:Ovaj deo izbaciti kada se sredi indeksiranje u map i main i zameniti sa prvim zakomentarisanim delom ispod
 	for i=1, map.map.height do
 		M.nodes[i] = {}
 		for j=1, map.map.width do
@@ -121,8 +121,10 @@ function insertHeap(list, n, element)
 	while i > 1 do
 		--io.write(("INSERT I = %d \n"):format(i))
 		i2 = math.floor(i/2)
-		if list[i].h + list[i].dist > list[i2].h + list[i2].dist then
-			break
+        eq = math.random()<=.5
+		if list[i].h + list[i].dist > list[i2].h + list[i2].dist or
+           (list[i].h + list[i].dist == list[i2].h + list[i2].dist and eq)  then
+            break
 		end
 		p = copy(list[i])
 		list[i] = copy(list[i2])
@@ -239,6 +241,7 @@ function M.calculatePath(creep, endX, endY)
 							currentList[i].dist = M.nodes[node.x][node.x].dist + 1
 							currentList[i].parentX = node.x
 							currentList[i].parentY = node.y
+
 						--rebalance
 							while i > 1 do
 

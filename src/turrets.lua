@@ -11,6 +11,7 @@ M.turret[index] = {}
 M.turret[index].img = fireTurretImg
 M.turret[index].cost = 50
 M.turret[index].dmg = 3
+M.turret[index].cooldown = 30
 M.turret[index].range = 1
 M.turret[index].targetNum = 1
 M.turret[index].rayr = 255
@@ -26,6 +27,7 @@ M.turret[index] = {}
 M.turret[index].img = frostTurretImg
 M.turret[index].cost = 60
 M.turret[index].dmg = 1
+M.turret[index].cooldown = 0
 M.turret[index].range = 2
 M.turret[index].targetNum = 2
 M.turret[index].rayr = 150
@@ -41,6 +43,7 @@ M.turret[index] = {}
 M.turret[index].img = fireTurretImg -- split
 M.turret[index].cost = 100
 M.turret[index].dmg = 2
+M.turret[index].cooldown = 15
 M.turret[index].range = 1
 M.turret[index].targetNum = -1 -- inf
 M.turret[index].rayr = 0
@@ -50,9 +53,10 @@ M.turret[index].effects = {}
 index = index + 1
 
 M.turret[index] = {}
-M.turret[index].img = frostTurretImg -- split
-M.turret[index].cost = 100
-M.turret[index].dmg = 2
+M.turret[index].img = fireTurretImg -- split
+M.turret[index].cost = 0
+M.turret[index].dmg = 0
+M.turret[index].cooldown = 15
 M.turret[index].range = 1
 M.turret[index].targetNum = -1 -- inf
 M.turret[index].rayr = 0
@@ -60,6 +64,8 @@ M.turret[index].rayg = 255
 M.turret[index].rayb = 0
 M.turret[index].effects = {}
 index = index + 1
+
+
 
 
 
