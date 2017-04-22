@@ -5,7 +5,7 @@ M.map = {}
 
 M.map.width = 0
 M.map.height = 0
-
+M.canBuild = true
 -- globalne predefinisane boje
 M.color = {}
 M.color.r = 255
@@ -26,6 +26,7 @@ M.colorHover.a = 100
 
 function M.newTurret(i, j, type)
     if M.map[i][j].val ~= M.const.empty or type == 0 or
+    --not M.canBuild or --odkomentarisati kada ne debagujemo
        gui.gold - turret[type].cost < 0 then
        return
     end
@@ -41,7 +42,7 @@ function M.newTurret(i, j, type)
     newTurret.currCooldown = turret[type].cooldown
     newTurret.range = turret[type].range
     newTurret.targetNum = turret[type].targetNum
-    newTurret.drawingTime = 10
+    newTurret.drawingTime = 0.2 --ovo bi moglo da se mune u turrets.lua
     newTurret.currDrawingTime = newTurret.drawingTime
 
     newTurret.effects = {}
@@ -72,6 +73,8 @@ M.turrets = {}
 turrets = require("turrets")
 turret = turrets.turret
 
+spawnHole = {}
+spawnHole.img = love.graphics.newImage("img/hole.png")
 rock = {}
 rock.img = love.graphics.newImage("img/rock.png")
 background = {}
@@ -88,7 +91,7 @@ screen = {}
 
 --update vars pri resize
 function M.updateSize(topBar, bottomBar)
-    print(turret)
+    --print(turret)
     screen.width = love.graphics.getWidth()
     screen.height = love.graphics.getHeight() - gui.topBarHeight - gui.bottomBarHeight
     background.scalex = 1/(background.img:getWidth()/screen.width)
@@ -103,7 +106,7 @@ function M.updateSize(topBar, bottomBar)
     rock.scalex = 1/(rock.img:getWidth()/chunkW)
     rock.scaley = 1/(rock.img:getHeight()/chunkH)*rockToChunkHeight
     rock.offsety = gui.topBarHeight - rock.img:getHeight()*rock.scaley
-    
+
     turret.scalex = 1/(turret[1].img:getWidth()/chunkW)
     turret.scaley = 1/(turret[1].img:getHeight()/chunkH)*turretToChunkHeight
     turret.offsety = gui.topBarHeight - turret[1].img:getHeight()*turret.scaley
@@ -117,6 +120,10 @@ function M.updateSize(topBar, bottomBar)
     burek.holylight.offsetx = -burek.holylight.scalex*burek.holylight.img:getWidth() / 2
     burek.holylight.offsety = gui.topBarHeight - burek.holylight.img:getHeight()*burek.holylight.scaley * 0.8
     burek.holylight.backoffsety = gui.topBarHeight - burek.holylight.img:getHeight()*burek.holylight.scaley * 0.6
+
+    spawnHole.scalex = 1/(spawnHole.img:getWidth()/chunkW)
+    spawnHole.scaley = 1/(spawnHole.img:getHeight()/chunkH)
+    spawnHole.offsety = gui.topBarHeight - spawnHole.img:getHeight()*spawnHole.scaley
 end
 
 
@@ -144,7 +151,7 @@ function generateRocks(w, h, n)
     for i=1, n do
         local x = math.random(w)
         local y = math.random(h)
-		if not (x==1 and y==1) and not ((x==w or x==w-1) and (y==1 or y==2)) then
+		if not (x==1 and y==h) and not ((x==w or x==w-1) and (y==1 or y==2)) then
 			M.map[x][y].val = M.const.rock
 		end
     end
@@ -189,6 +196,9 @@ function M.draw()
             love.graphics.rectangle("fill", (i-1)*chunkW, gui.topBarHeight + (j-1)*chunkH, chunkW-1, chunkH-1)
         end
     end
+    love.graphics.setColor(255,255,255)
+    love.graphics.draw(spawnHole.img,  (enemy.creepStarty-1)*chunkW,
+    enemy.creepStartx*chunkH + spawnHole.offsety, 0, spawnHole.scalex, spawnHole.scaley)
 
     for j=1 , M.map.height do
       -- draw row of creeps

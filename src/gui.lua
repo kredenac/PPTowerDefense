@@ -126,7 +126,7 @@ end
 function M.mousePressed(x, y, button)
     mouseX, mouseY = x, y
     isy = mouseY > love.graphics.getHeight() - buttonSize - buttonMargin and mouseY < love.graphics.getHeight() - buttonMargin
-    for i=1, buttonNum-1 do
+    for i=1, buttonNum do
         isx = mouseX > buttonMargin + (i-1)*(buttonSize+buttonMargin) and mouseX < (i)*(buttonSize+buttonMargin)
 
         if isx and isy then
@@ -139,16 +139,29 @@ function M.mousePressed(x, y, button)
             M.buttons[i].hover = false
         end
     end
-    --ako je kliknuto nesto sto nije turret
-    selected = false
-    for i=1,buttonNum-1 do
-        if M.selectedTurretType ~= i then
-            selected = true
-        end
-    end
-    if selected == false  then
+
+
+    --print(M.selectedTurretType)
+
+    --ako je kliknuto na enemy
+    if M.selectedTurretType == buttonNum then
+        enemy.spawnTimeDelta = 0.5
+
+ 	    enemy.spawnCreepWave(totalTime, enemy.waveSize)
+        enemy.updateWaveSize()
         M.selectedTurretType = 0
     end
+    --mislim da nam ne terba ovo ispod iskomentarisano?
+    --ako je kliknuto nesto sto nije turret
+    -- selected = false
+    -- for i=1,buttonNum-1 do
+    --     if M.selectedTurretType == i then
+    --         selected = true
+    --     end
+    -- end
+    -- if selected == false  then
+    --     M.selectedTurretType = 0
+    -- end
 end
 
 return M

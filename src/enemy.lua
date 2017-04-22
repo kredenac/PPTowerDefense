@@ -19,8 +19,35 @@ creep.effects={}
 creep.chIndex=1
 numCreeps=0
 creepValue = 10
+M.creepStartx = 10
+M.creepStarty = 1
+M.waveSize = 10
+beginSpawnAt = 0
+numLeftToSpawn = 0
+M.checkSpawning = -1
+M.spawnTimeDelta = 0.5
+function M.spawnCreepWave(currTime, n)
+    local TIME_APART = M.spawnTimeDelta
+
+    --ako se samo proverava da li se spawn, i treba da se stvore
+    if n == M.checkSpawning then
+        if beginSpawnAt + TIME_APART <= currTime and numLeftToSpawn > 0 then
+            beginSpawnAt = beginSpawnAt + TIME_APART
+            numLeftToSpawn = numLeftToSpawn - 1
+            spawnCreepAndInitAstar()
+        end
+    else--inace se inicijalizuje spawnovanje
+        beginSpawnAt = currTime
+        numLeftToSpawn = n
+        map.canBuild = false
+    end
+end
+
+function M.updateWaveSize()
+    M.waveSize = M.waveSize + math.floor(M.waveSize / 2 )
+end
 --iscrtava nisan od kule do neprijatelja
-function M.targetEnemies()
+function M.targetEnemies(dt)
     -- local offsetx = chunkW / 2
     -- local offsety = chunkH / 2 + gui.topBarHeight
 
@@ -28,19 +55,17 @@ function M.targetEnemies()
 		local i, j = turr.x, turr.y
 		local creeps = enemy.inRange(i,j,turr.range,turr.targetNum)
 
-        turr.targets = {} -- FIXME skupo al boze moj. Racuna targete svaki put
+        turr.targets = {} --Racuna targete svaki put
 
         -- if turr.currCooldown == nil then
         --     print("AAA")
         --     turr.currCooldown = turr.cooldown
         -- end
 
-        turr.currCooldown = turr.currCooldown-1
-        turr.currDrawingTime = turr.currDrawingTime-1
-
+        turr.currCooldown = turr.currCooldown - dt
+        turr.currDrawingTime = turr.currDrawingTime - dt
 
 		for _,v in pairs(creeps) do
-
             turr.targets[v] = true
 
             if turr.currCooldown <= 0 then
@@ -63,6 +88,9 @@ function M.targetEnemies()
                      M.rows[M.creeps[v].posy][v] = nil
                      M.creeps[v] = nil
                      numCreeps = numCreeps - 1
+                     if numCreeps == 0 then
+                        levelEnded()
+                     end
                      gui.gold = gui.gold + creepValue
                      -- TODO kad umre da iskoci + (gold) iznad njega
                 end
@@ -151,8 +179,9 @@ function M.spawnCreeps(path)
 end
 
 --samo za testiranje. treba da slusa 'naredjenja' od A*, a ne usr input
-function M.moveCreeps()
-    local step = M.step
+function M.moveCreeps(dt)
+    local mul = dt / 0.0167 --odnos dt i idealnog dt
+    local step = M.step * mul
 
     -- print (dx,dy)
 
@@ -179,7 +208,7 @@ function M.moveCreeps()
                     print(i.effects["freeze"]["slow"])
                     dx = dx*i.effects["freeze"]["slow"]
                     dy = dy*i.effects["freeze"]["slow"]
-                    i.effects["freeze"]["duration"] = i.effects["freeze"]["duration"] - 1 -- FIXME: mozda ne bas -1
+                    i.effects["freeze"]["duration"] = i.effects["freeze"]["duration"] - dt
                 end
             end
 
@@ -226,7 +255,7 @@ function M.moveCreeps()
 
             if i.effects["burn"]~=nil then
                 if i.effects["burn"]["duration"] > 0 then
-                    i.effects["burn"]["duration"] = i.effects["burn"]["duration"] - 1 -- FIXME: mozda ne bas -1
+                    i.effects["burn"]["duration"] = i.effects["burn"]["duration"] - dt -- FIXME: mozda ne bas -1
                     print(i.effects["burn"]["dot"])
                     dead = i:inflictDamage(i.effects["burn"]["dot"])
                     -- TODO prebaci ovo u funkciju, pojavljuje se na 2 mesta
@@ -239,9 +268,7 @@ function M.moveCreeps()
                     end
                 end
             end
-
             damageBurek(i,index)
-
 		end
     end
 end
@@ -254,6 +281,9 @@ function damageBurek(creep,index)
         M.rows[creep.posy] [index] = nil
         M.creeps[index] = nil
         numCreeps = numCreeps - 1
+        if numCreeps == 0 then
+            levelEnded()
+        end
     end
 end
 
@@ -290,12 +320,10 @@ function M.drawCreeps(row)
         end
         love.graphics.draw(M.img, x, y, 0, scalex, scaley)
 
-
         --draw hp
         local hpPercent = i.health / creep.health
         love.graphics.setColor(255*(1-hpPercent),255*hpPercent,0)
         love.graphics.line(x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
     end
-    -- print()
 end
 return M

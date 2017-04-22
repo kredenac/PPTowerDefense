@@ -33,14 +33,18 @@ function love.load()
 -- 		end
 -- 		print()
 -- 	end
-
-
+	level = 1
+	totalTime = 0
 	--astar.print()
 end
 
 function love.update(dt)
+	--total time meri ukupno vreme od pokreanja igre
+	totalTime = totalTime + dt
+	--print(dt) neki idealan dt = 1/60 = 0.0167
+	enemy.spawnCreepWave(totalTime, enemy.checkSpawning)
 	enemy.targetEnemies(dt)
-	enemy.moveCreeps()
+	enemy.moveCreeps(dt)
 
 end
 
@@ -128,15 +132,13 @@ function love.keypressed( key )
 
    --for testing
    if key == "space" then
-	   --TODO srediti malo
-	   astar.init(map, 1, 19)
-	   creep = {}
-	   creep.posx=10
-	   creep.posy=1
-	   path = astar.calculatePath(creep, 1,19)
-	--    astar.print()
-	   enemy.spawnCreeps(path)
-	   --enemy.moveCreeps()
+	   spawnCreepAndInitAstar()
+   end
+
+   if key == "g" then
+	   enemy.spawnTimeDelta = 0.5
+	   numOfCreeps = 10
+	   enemy.spawnCreepWave(totalTime, numOfCreeps)
    end
 
 --    if key == "p" then
@@ -160,6 +162,18 @@ function love.keypressed( key )
 --    end
 end
 
+function spawnCreepAndInitAstar()
+	--TODO srediti malo
+	astar.init(map, 1, 19)
+	creep = {}
+	creep.posx = enemy.creepStartx
+	creep.posy = enemy.creepStarty
+	path = astar.calculatePath(creep, 1,19)
+    --astar.print()
+	enemy.spawnCreeps(path)
+	--enemy.moveCreeps()
+end
+
 function love.keyreleased( key )
    if key == "w" then
 
@@ -178,4 +192,9 @@ function tableSize(tab)
 		c = c + 1
 	end
 	return c
+end
+
+function levelEnded()
+	level = level + 1
+	map.canBuild = true
 end
