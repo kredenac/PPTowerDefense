@@ -65,11 +65,13 @@ function M.targetEnemies(dt)
         turr.currCooldown = turr.currCooldown - dt
         turr.currDrawingTime = turr.currDrawingTime - dt
 
-		for _,v in pairs(creeps) do
+
+
+
+        for _,v in pairs(creeps) do
             turr.targets[v] = true
 
             if turr.currCooldown <= 0 then
-                turr.currCooldown = turr.cooldown
                 turr.currDrawingTime = turr.drawingTime
 
                 --add effects
@@ -95,6 +97,9 @@ function M.targetEnemies(dt)
                      -- TODO kad umre da iskoci + (gold) iznad njega
                 end
             end
+        end
+        if turr.currCooldown <= 0 then
+            turr.currCooldown = turr.cooldown
         end
 	end
 end
@@ -163,11 +168,6 @@ function M.spawnCreeps(path)
 	M.creeps[creepId].path = copy(path)
     M.creeps[creepId].effects = {}
 
-	-- for j=1, M.creeps[creepId].path.len do
-		--print(("I : %d"):format(j))
-		-- print(("X: %d, Y: %d"):format(M.creeps[creepId].path[j].x, M.creeps[creepId].path[j].y))
-	-- end
-
     if M.rows[creep.posy] == nil then
       M.rows[creep.posy] = {}
     end
@@ -182,8 +182,6 @@ end
 function M.moveCreeps(dt)
     local mul = dt / 0.0167 --odnos dt i idealnog dt
     local step = M.step * mul
-
-    -- print (dx,dy)
 
     for index,i in pairs(M.creeps) do
 		if i.chIndex <= i.path.len then
@@ -205,7 +203,7 @@ function M.moveCreeps(dt)
 
             if i.effects["freeze"]~=nil then
                 if i.effects["freeze"]["duration"] > 0 then
-                    print(i.effects["freeze"]["slow"])
+                    -- print(i.effects["freeze"]["slow"])
                     dx = dx*i.effects["freeze"]["slow"]
                     dy = dy*i.effects["freeze"]["slow"]
                     i.effects["freeze"]["duration"] = i.effects["freeze"]["duration"] - dt
