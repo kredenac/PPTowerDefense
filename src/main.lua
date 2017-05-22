@@ -132,7 +132,7 @@ function love.keypressed( key )
 
    --for testing
    if key == "space" then
-	   spawnCreepAndInitAstar()
+	   spawnCreepAndInitAstar(1000)
    end
 
    if key == "g" then
@@ -162,15 +162,16 @@ function love.keypressed( key )
 --    end
 end
 
-function spawnCreepAndInitAstar()
+function spawnCreepAndInitAstar(hp)
 	--TODO srediti malo
 	astar.init(map, 1, 19)
 	creep = {}
 	creep.posx = enemy.creepStartx
 	creep.posy = enemy.creepStarty
+	creep.health = hp
 	path = astar.calculatePath(creep, 1,19)
     --astar.print()
-	enemy.spawnCreeps(path)
+	enemy.spawnCreeps(path,hp)
 	--enemy.moveCreeps()
 end
 

@@ -10,7 +10,7 @@ M.topBarHeight = 50
 M.bottomBarHeight = 150
 
 goldIcon = love.graphics.newImage("img/gold.png")
-M.gold = 1000
+M.gold = 300
 
 enemyImg = love.graphics.newImage("img/enemy.png")
 

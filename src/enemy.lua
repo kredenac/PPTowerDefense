@@ -6,7 +6,7 @@ M.creeps = {}
 M.rows = {} -- IDs in each row
 M.step = 0.1
 local creep={}
-creep.health=1000
+creep.health=500
 --coords chunka
 creep.posx=1
 creep.posy=10 -- TODO sredi negde drugo
@@ -24,6 +24,7 @@ M.creepStarty = 1
 M.waveSize = 10
 beginSpawnAt = 0
 numLeftToSpawn = 0
+hp = creep.health
 M.checkSpawning = -1
 M.spawnTimeDelta = 0.5
 function M.spawnCreepWave(currTime, n)
@@ -34,17 +35,22 @@ function M.spawnCreepWave(currTime, n)
         if beginSpawnAt + TIME_APART <= currTime and numLeftToSpawn > 0 then
             beginSpawnAt = beginSpawnAt + TIME_APART
             numLeftToSpawn = numLeftToSpawn - 1
-            spawnCreepAndInitAstar()
+            spawnCreepAndInitAstar(hp)
         end
     else--inace se inicijalizuje spawnovanje
         beginSpawnAt = currTime
-        numLeftToSpawn = n
+        -- numLeftToSpawn = n
+        minSum = math.floor(n/3)
+        numLeftToSpawn = minSum + math.ceil(math.random()*(n-minSum))
+        hp = creep.health * math.sqrt(n/10) * (n/numLeftToSpawn)-- skaliraju se da budu jaci sto ih je manje
+        print("hp: ")
+        print(hp)
         map.canBuild = false
     end
 end
 
 function M.updateWaveSize()
-    M.waveSize = M.waveSize + math.floor(M.waveSize / 2 )
+    M.waveSize = M.waveSize + math.floor(M.waveSize / 2.5 )
 end
 --iscrtava nisan od kule do neprijatelja
 function M.targetEnemies(dt)
@@ -162,11 +168,12 @@ function M.inRange(i,j,range,n)
 end
 
 creepId = 1
-function M.spawnCreeps(path)
+function M.spawnCreeps(path,hp)
     local newCreep = copy(creep)
     M.creeps[creepId] = newCreep
 	M.creeps[creepId].path = copy(path)
     M.creeps[creepId].effects = {}
+    M.creeps[creepId].health = hp
 
     if M.rows[creep.posy] == nil then
       M.rows[creep.posy] = {}
@@ -254,7 +261,6 @@ function M.moveCreeps(dt)
             if i.effects["burn"]~=nil then
                 if i.effects["burn"]["duration"] > 0 then
                     i.effects["burn"]["duration"] = i.effects["burn"]["duration"] - dt -- FIXME: mozda ne bas -1
-                    print(i.effects["burn"]["dot"])
                     dead = i:inflictDamage(i.effects["burn"]["dot"])
                     -- TODO prebaci ovo u funkciju, pojavljuje se na 2 mesta
                     if dead then
