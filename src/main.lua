@@ -133,6 +133,8 @@ function love.keypressed( key )
    --for testing
    if key == "space" then
 	   spawnCreepAndInitAstar(1000)
+		 --astar.print()
+		 --print('\n')
    end
 
    if key == "g" then
@@ -140,38 +142,24 @@ function love.keypressed( key )
 	   numOfCreeps = 10
 	   enemy.spawnCreepWave(totalTime, numOfCreeps)
    end
-
---    if key == "p" then
--- -- 	   io.write(astar.nodes.map.width)
--- 	   	astar.init(map, 1, 19)
--- 	   --astar.heuristic(1,19)
--- 	   for i=1, astar.nodes.height do
--- 		   for j=1, astar.nodes.width do
--- 			   io.write(astar.nodes[i][j].h)
--- 			   io.write(" ")
--- 			end
--- 			print()
--- 	   end
---
--- 	   creep = {}
--- 	   creep.posx=1
--- 	   creep.posy=1
---
--- 	   astar.calculatePath(creep, 1,19)
---
---    end
 end
 
 function spawnCreepAndInitAstar(hp)
-	--TODO srediti malo
 	astar.init(map, 1, 19)
 	creep = {}
 	creep.posx = enemy.creepStartx
 	creep.posy = enemy.creepStarty
 	creep.health = hp
-	path = astar.calculatePath(creep, 1,19)
-    --astar.print()
-	enemy.spawnCreeps(path,hp)
+	function try()
+		path = astar.calculatePath(creep, 1,19)
+	end
+	if pcall(try) then
+		enemy.spawnCreeps(path,hp)
+	else
+		--nadaaaaaa
+	end
+  --astar.print()
+	--print()
 	--enemy.moveCreeps()
 end
 

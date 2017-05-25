@@ -3,7 +3,7 @@ local M={}
 M.path = {}
 M.nodes = {}
 M.heap = {}
-M.maxDist = 100
+M.maxDist = 100000
 
 function copy (t)
     if type(t) ~= "table" then return t end
@@ -20,7 +20,10 @@ function M.init(map, endX, endY)
 		M.nodes[i] = {}
 		for j=1, map.map.width do
 			M.nodes[i][j]=copy(map.map[j][i])
+      --io.write(M.nodes[i][j].val)
+      --io.write(" ")
 		end
+    --print()
 	end
 	M.nodes.height = map.map.height
 	M.nodes.width = map.map.width
@@ -35,9 +38,11 @@ function M.init(map, endX, endY)
 end
 
 function M.print()
-	for i=1, map.map.height do
-		for j=1, map.map.width do
-			io.write(M.nodes[i][j].h)
+	for i=1, M.nodes.height do
+		for j=1, M.nodes.width do
+			io.write(M.nodes[i][j].h+M.nodes[i][j].dist)
+      --io.write('(', i, ",", j, ")-")
+      --io.write(M.nodes[i][j].val)
 			io.write(" ")
 		end
 		print()
@@ -68,7 +73,8 @@ function neighbours(x, y)
 			nNodes[i].h = M.nodes[x-1][y].h
 			nNodes[i].parentX = x
 			nNodes[i].parentY = y
-			nNodes[i].dist = 100
+			nNodes[i].dist = M.nodes[x-1][y].dist
+      nNodes[i].val = M.nodes[x-1][y].val
 			i = i+1
 		end
 	end
@@ -80,7 +86,8 @@ function neighbours(x, y)
 			nNodes[i].h = M.nodes[x][y-1].h
 			nNodes[i].parentX = x
 			nNodes[i].parentY = y
-			nNodes[i].dist = 100
+			nNodes[i].dist = M.nodes[x][y-1].dist
+      nNodes[i].val = M.nodes[x][y-1].val
 			i = i+1
 		end
 	end
@@ -92,7 +99,8 @@ function neighbours(x, y)
 			nNodes[i].h = M.nodes[x+1][y].h
 			nNodes[i].parentX = x
 			nNodes[i].parentY = y
-			nNodes[i].dist = 100
+			nNodes[i].dist = M.nodes[x+1][y].dist
+      nNodes[i].val = M.nodes[x+1][y].val
 			i = i+1
 		end
 	end
@@ -104,7 +112,8 @@ function neighbours(x, y)
 			nNodes[i].h = M.nodes[x][y+1].h
 			nNodes[i].parentX = x
 			nNodes[i].parentY = y
-			nNodes[i].dist = 100
+			nNodes[i].dist = M.nodes[x][y+1].dist
+      nNodes[i].val = M.nodes[x][y+1].val
 			i = i+1
 		end
 	end
@@ -197,9 +206,6 @@ function inHeap(list, element)
 	return -1
 end
 
---Implementirati da currentList bude heap i zavrsiti A*, u closedList key-jevi ce biti i,j i value 1 ako je u njoj
---U currentList[1].x, currentList[1].y ce biti indeksi cvora, .dist ce biti najbolje dosadasnje rastojanje, .parentX, .parentY
-
 function M.calculatePath(creep, endX, endY)
 	local closedList = {}
 	local currentList = {}
@@ -218,13 +224,10 @@ function M.calculatePath(creep, endX, endY)
 	node.parentX = -1
 	node.parentY = -1
 	node.dist = 0
+  node.val = M.nodes[node.x][node.y].val
+  --M.nodes[node.x][node.y].dist = 0
 	n = insertHeap(currentList, n, node)
 	while currentList[1].x ~= endX or currentList[1].y ~= endY do
-		--print(("CURRENT NODE : %d %d h+d = %d\n"):format(currentList[1].x, currentList[1].y, currentList[1].dist+currentList[1].h))
-		--print heap
--- 		for s, z in pairs(currentList) do
--- 			print(("Key: %d, x: %d y: %d, h+dist: %d\n"):format(s, z.x, z.y, z.h+z.dist))
--- 		end
 
 		node = copy(currentList[1])
 		M.nodes[node.x][node.y] = copy(node)
@@ -237,8 +240,8 @@ function M.calculatePath(creep, endX, endY)
 				if closedList[v.x][v.y] ~= 1 then
 					i = inHeap(currentList, v)
 					if i ~= -1 then --and currentList[i].dist > M.nodes[curX][curY].dist + 1 then
-						if currentList[i].dist > M.nodes[node.x][node.y].dist + 1 then
-							currentList[i].dist = M.nodes[node.x][node.x].dist + 1
+						if node.dist + 1 < currentList[i].dist then--if currentList[i].dist > M.nodes[node.x][node.y].dist + 1 then
+							currentList[i].dist = node.dist + 1 --M.nodes[node.x][node.x].dist + 1
 							currentList[i].parentX = node.x
 							currentList[i].parentY = node.y
 
@@ -258,7 +261,7 @@ function M.calculatePath(creep, endX, endY)
 					else
 						v.parentX = node.x
 						v.parentY = node.y
-						v.dist = M.nodes[node.x][node.y].dist + 1
+						v.dist = node.dist + 1 --M.nodes[node.x][node.y].dist + 1
 						n = insertHeap(currentList, n, v)
 					end
 				end

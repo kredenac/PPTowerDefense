@@ -26,7 +26,7 @@ M.colorHover.a = 100
 
 function M.newTurret(i, j, type)
     if M.map[i][j].val ~= M.const.empty or type == 0 or
-    --not M.canBuild or --odkomentarisati kada ne debagujemo
+    not M.canBuild or --odkomentarisati kada ne debagujemo
        gui.gold - turret[type].cost < 0 then
        return
     end
