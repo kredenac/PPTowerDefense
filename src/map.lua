@@ -1,6 +1,6 @@
 local M={}
---M is a module table
---FIXME: indeksiranje mape je lose, treba HEIGHTxWIDTH i  da se prolazi kroz mapu sa map[height][width]
+M.astar = require("astar")
+
 M.map = {}
 
 M.map.width = 0
@@ -55,7 +55,7 @@ function M.newTurret(i, j, type)
     gui.gold = gui.gold - turret[type].cost
 end
 
-function M.removeTurret(i, j)
+function M.removeTurret(i, j, free)
     if map.map[i][j].val ~= map.const.turret then
         return
     end
@@ -63,7 +63,11 @@ function M.removeTurret(i, j)
     for k, v in pairs(M.turrets) do
         if v.x == i and v.y == j then
             M.turrets[k] = nil --ovako se brise entry iz tabele
-            gui.gold = gui.gold + turret[M.map[i][j].ttype].cost/2
+            if free then
+              gui.gold = gui.gold + turret[M.map[i][j].ttype].cost
+            else
+              gui.gold = gui.gold + turret[M.map[i][j].ttype].cost/2
+            end
         end
     end
 end
@@ -139,22 +143,27 @@ function M.generateEmpty(width, height, numRocks)
             M.map[i][j].hover = false
         end
     end
-    generateRocks(width, height, numRocks)
+    begin = {}
+  	begin.posx = 10
+  	begin.posy = 1
+    --generateRocks(width, height, numRocks)
     M.map.width = width
     M.map.height = height
     burek.posx = width
     burek.posy = 1
+
     M.updateSize()
 end
 
-function generateRocks(w, h, n)
+function M.generateRocks(w, h, n)
     for i=1, n do
-        local x = math.random(w-2) + 1
-        local y = math.random(h-2) + 1
-		if not (x==2 and y==h-1) and not ((x==w-1 or x==w-2) and (y==2 or y==3)) then
-			M.map[x][y].val = M.const.rock
-		end
+      local x = math.random(w)
+        local y = math.random(h)
+		    if not (x==1 and y==h) and not ((x==w or x==w-1) and (y==1 or y==2)) then
+    			M.map[x][y].val = M.const.rock
+    		end
     end
+    M.updateSize()
 end
 -- Promeni boju chunka na hover
 -- moze matematicki da se izracuna u kom je polju, umesto for petlje

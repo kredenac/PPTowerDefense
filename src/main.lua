@@ -1,5 +1,5 @@
 --drzite tab size na 4!!!
---TODO indeksi
+astar = require("astar")
 function love.load()
 	love.window.setTitle("Defense of the Burek")
 	defaultWidth, defaultHeight = 1024, 768
@@ -9,10 +9,25 @@ function love.load()
 	gui = require("gui")
 	map = require("map")
 	enemy = require("enemy")
-	astar = require("astar")
+
 
 	numRocks = 19
 	map.generateEmpty(19,10, numRocks)
+	map.generateRocks(19, 10, numRocks)
+	astar.init(map, 1, 19)
+
+	creep = {}
+	creep.posx = enemy.creepStartx
+	creep.posy = enemy.creepStarty
+	function try()
+		astar.calculatePath(creep, 1,19)
+	end
+	if pcall(try) then
+		--nadaaaaaa
+	else
+		map.generateRocks(19, 10, numRocks)
+	end
+
 
 	love.mouse.setVisible(false)
 	defaultCursor = love.graphics.newImage("img/mouse_cursor.png")
@@ -24,15 +39,7 @@ function love.load()
 	love.audio.setVolume(musicVolume)
 	love.keyboard.setKeyRepeat(true)
 	love.graphics.setLineWidth(5)
-	--Ovako bi trebalo da se ispisuje mapa,sto ne radi zbog mesanja indexa, tj loseg generateEmpty
-	--Pise da je u mat.mat.height i width kao sto treba da bude, ali to nije stvarno slucaj
--- 	for i=1, map.map.height do
--- 		for j=1, map.map.width do
--- 			io.write(map.map[i][j].val)
--- 			io.write(" ")
--- 		end
--- 		print()
--- 	end
+
 	level = 1
 	totalTime = 0
 	--astar.print()
@@ -82,12 +89,27 @@ function love.mousepressed(x, y, button, istouch)
 	if leftClick then --jer nema lenjog izracunavanja
 		if ( x > 0 and y > 0) then
 			map.newTurret(x, y, gui.selectedTurretType)
+			-- creep = {}
+			-- creep.posx = enemy.creepStartx
+			-- creep.posy = enemy.creepStarty
+			-- function try()
+			-- 	astar.calculatePath(creep, 1,19)
+			-- 	astar.print(creep, 1, 19)
+			-- 	print("USAO!!!")
+			-- end
+			-- if pcall(try) then
+			-- 	--nadaaaaaa
+			-- 	print("USPEO")
+			-- else
+			-- 	map.removeTurret(x, y, true)
+			-- 	print("USAO")
+			-- end
 		end
 	end
 	local rightClick = button == 2
 	if rightClick then
 		if ( x > 0 and y > 0 ) then
-			map.removeTurret(x, y)
+			map.removeTurret(x, y, false)
 		end
 	end
 end

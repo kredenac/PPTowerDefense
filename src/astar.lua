@@ -15,15 +15,14 @@ function copy (t)
 end
 -- u mainu kao parametar map
 function M.init(map, endX, endY)
-	-- TODO:Ovaj deo izbaciti kada se sredi indeksiranje u map i main i zameniti sa prvim zakomentarisanim delom ispod
 	for i=1, map.map.height do
 		M.nodes[i] = {}
 		for j=1, map.map.width do
 			M.nodes[i][j]=copy(map.map[j][i])
-      --io.write(M.nodes[i][j].val)
-      --io.write(" ")
+      io.write(M.nodes[i][j].val)
+      io.write(" ")
 		end
-    --print()
+    print()
 	end
 	M.nodes.height = map.map.height
 	M.nodes.width = map.map.width
@@ -41,6 +40,11 @@ function M.print()
 	for i=1, M.nodes.height do
 		for j=1, M.nodes.width do
 			io.write(M.nodes[i][j].h+M.nodes[i][j].dist)
+      -- if(M.nodes[i][j] == M.map.walkable) then
+      --   io.write("0")
+      -- else
+      --   io.write("1")
+      -- end
       --io.write('(', i, ",", j, ")-")
       --io.write(M.nodes[i][j].val)
 			io.write(" ")
