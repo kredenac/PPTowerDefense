@@ -149,9 +149,9 @@ end
 
 function generateRocks(w, h, n)
     for i=1, n do
-        local x = math.random(w)
-        local y = math.random(h)
-		if not (x==1 and y==h) and not ((x==w or x==w-1) and (y==1 or y==2)) then
+        local x = math.random(w-2) + 1
+        local y = math.random(h-2) + 1
+		if not (x==2 and y==h-1) and not ((x==w-1 or x==w-2) and (y==2 or y==3)) then
 			M.map[x][y].val = M.const.rock
 		end
     end

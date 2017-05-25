@@ -43,8 +43,6 @@ function M.spawnCreepWave(currTime, n)
         minSum = math.floor(n/3)
         numLeftToSpawn = minSum + math.ceil(math.random()*(n-minSum))
         hp = creep.health * math.sqrt(n/10) * (n/numLeftToSpawn)-- skaliraju se da budu jaci sto ih je manje
-        print("hp: ")
-        print(hp)
         map.canBuild = false
     end
 end
@@ -174,6 +172,7 @@ function M.spawnCreeps(path,hp)
 	M.creeps[creepId].path = copy(path)
     M.creeps[creepId].effects = {}
     M.creeps[creepId].health = hp
+    M.creeps[creepId].maxHp = hp
 
     if M.rows[creep.posy] == nil then
       M.rows[creep.posy] = {}
@@ -325,7 +324,7 @@ function M.drawCreeps(row)
         love.graphics.draw(M.img, x, y, 0, scalex, scaley)
 
         --draw hp
-        local hpPercent = i.health / creep.health
+        local hpPercent = i.health / i.maxHp
         love.graphics.setColor(255*(1-hpPercent),255*hpPercent,0)
         love.graphics.line(x, y + hpBarAbove, x + hpBarWidth * hpPercent, y+ hpBarAbove)
     end
