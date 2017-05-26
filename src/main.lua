@@ -1,4 +1,3 @@
---drzite tab size na 4!!!
 astar = require("astar")
 function love.load()
 	love.window.setTitle("Defense of the Burek")
@@ -22,9 +21,7 @@ function love.load()
 	function try()
 		astar.calculatePath(creep, 1,19)
 	end
-	if pcall(try) then
-		--nadaaaaaa
-	else
+	if pcall(try) == false then
 		map.generateRocks(19, 10, numRocks)
 	end
 
@@ -42,7 +39,6 @@ function love.load()
 
 	level = 1
 	totalTime = 0
-	--astar.print()
 end
 
 function love.update(dt)
@@ -58,8 +54,6 @@ end
 function love.draw()
 	map.draw()
 	enemy.drawRays()
-	 -- TODO zar ne treba deo da se pomeri u update
-
 	gui.draw()
 	drawMouse(mouseImg)
 end
@@ -89,21 +83,6 @@ function love.mousepressed(x, y, button, istouch)
 	if leftClick then --jer nema lenjog izracunavanja
 		if ( x > 0 and y > 0) then
 			map.newTurret(x, y, gui.selectedTurretType)
-			-- creep = {}
-			-- creep.posx = enemy.creepStartx
-			-- creep.posy = enemy.creepStarty
-			-- function try()
-			-- 	astar.calculatePath(creep, 1,19)
-			-- 	astar.print(creep, 1, 19)
-			-- 	print("USAO!!!")
-			-- end
-			-- if pcall(try) then
-			-- 	--nadaaaaaa
-			-- 	print("USPEO")
-			-- else
-			-- 	map.removeTurret(x, y, true)
-			-- 	print("USAO")
-			-- end
 		end
 	end
 	local rightClick = button == 2
@@ -138,9 +117,7 @@ function updateMouse()
 	end
 end
 
-
 --callbacks koje updateuju da li je dugme pritisnuto ili ne
-
 function love.keypressed( key )
    if key == "m" then
 	   musicVolume = -musicVolume  + 1
@@ -155,8 +132,6 @@ function love.keypressed( key )
    --for testing
    if key == "space" then
 	   spawnCreepAndInitAstar(1000)
-		 --astar.print()
-		 --print('\n')
    end
 
    if key == "g" then
@@ -180,15 +155,6 @@ function spawnCreepAndInitAstar(hp)
 	else
 		--nadaaaaaa
 	end
-  --astar.print()
-	--print()
-	--enemy.moveCreeps()
-end
-
-function love.keyreleased( key )
-   if key == "w" then
-
-   end
 end
 
 --callback na resize

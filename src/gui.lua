@@ -60,7 +60,6 @@ function drawButton(n,img)
     love.graphics.draw(img, buttonMargin + (n-1)*(buttonSize+buttonMargin),  love.graphics.getHeight() - buttonSize - buttonMargin + buttonPadding, 0, scale, scale, offsetx, 0)
 end
 function drawBurek()
-    --ovde se iscrtava burek, da ga ne bi hud blokirao
     love.graphics.setColor(255, 255, 255, burek.holylight.alphaBack)
     love.graphics.draw(burek.holylight.img, (map.map.width-1)*chunkW + burek.holylight.offsetx,
     (2)*chunkH + burek.holylight.backoffsety, 0, burek.holylight.scalex, burek.holylight.scaley)
@@ -140,28 +139,14 @@ function M.mousePressed(x, y, button)
         end
     end
 
-
-    --print(M.selectedTurretType)
-
     --ako je kliknuto na enemy
     if M.selectedTurretType == buttonNum then
-        enemy.spawnTimeDelta = 0.5
+        enemy.spawnTimeDelta = 0.4
 
  	    enemy.spawnCreepWave(totalTime, enemy.waveSize)
         enemy.updateWaveSize()
         M.selectedTurretType = 0
     end
-    --mislim da nam ne terba ovo ispod iskomentarisano?
-    --ako je kliknuto nesto sto nije turret
-    -- selected = false
-    -- for i=1,buttonNum-1 do
-    --     if M.selectedTurretType == i then
-    --         selected = true
-    --     end
-    -- end
-    -- if selected == false  then
-    --     M.selectedTurretType = 0
-    -- end
 end
 
 return M

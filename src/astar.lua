@@ -19,10 +19,10 @@ function M.init(map, endX, endY)
 		M.nodes[i] = {}
 		for j=1, map.map.width do
 			M.nodes[i][j]=copy(map.map[j][i])
-      io.write(M.nodes[i][j].val)
-      io.write(" ")
+    --   io.write(M.nodes[i][j].val)
+    --   io.write(" ")
 		end
-    print()
+    -- print()
 	end
 	M.nodes.height = map.map.height
 	M.nodes.width = map.map.width

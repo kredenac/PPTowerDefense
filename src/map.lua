@@ -130,7 +130,6 @@ function M.updateSize(topBar, bottomBar)
     spawnHole.offsety = gui.topBarHeight - spawnHole.img:getHeight()*spawnHole.scaley
 end
 
-
 -- Generise praznu mapu
 -- postavlja chunkW i chunkH, sto je visina i sirina svakog pravougaonika
 function M.generateEmpty(width, height, numRocks)
@@ -146,7 +145,6 @@ function M.generateEmpty(width, height, numRocks)
     begin = {}
   	begin.posx = 10
   	begin.posy = 1
-    --generateRocks(width, height, numRocks)
     M.map.width = width
     M.map.height = height
     burek.posx = width
@@ -159,7 +157,7 @@ function M.generateRocks(w, h, n)
     for i=1, n do
       local x = math.random(w)
         local y = math.random(h)
-		    if not (x==1 and y==h) and not ((x==w or x==w-1) and (y==1 or y==2)) then
+		    if not ((x==1 or x==2) and (y==h or y==h-1)) and not ((x==w or x==w-1 or x==w-2) and (y==1 or y==2 or y==3)) then
     			M.map[x][y].val = M.const.rock
     		end
     end
@@ -227,10 +225,7 @@ function M.draw()
             end
         end
         enemy.drawCreeps(j)
-    end
-    -- love.graphics.draw(burek.img, (M.map.width-1)*chunkW + burek.offsetx,
-    -- (1)*chunkH + burek.offsety, 0, burek.scalex, burek.scaley)
-
+    end    
 end
 
 --returning the module
