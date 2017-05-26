@@ -175,3 +175,34 @@ function levelEnded()
 	level = level + 1
 	map.canBuild = true
 end
+
+function resetGame()
+	for index,i in pairs(enemy.creeps) do
+		enemy.rows[enemy.creeps[index].posy][index] = nil
+		enemy.creeps[index] = nil
+	end
+	astar.path = {}
+	astar.nodes = {}
+	astar.heap = {}
+	map.generateEmpty(19,10, numRocks)
+	map.generateRocks(19, 10, numRocks)
+	astar.init(map, 1, 19)
+	function try()
+		astar.calculatePath(creep, 1,19)
+	end
+	if pcall(try) == false then
+		map.generateRocks(19, 10, numRocks)
+	end
+	burek.hp = burek.fullHp
+	level = 1
+	totalTime = 0
+	gui.gold = 300
+	map.canBuild = true
+	enemy.waveSize = 10
+	numCreeps=0
+	beginSpawnAt = 0
+	numLeftToSpawn = 0
+	for k, v in pairs(map.turrets) do
+		map.turrets[k] = nil
+	end
+end

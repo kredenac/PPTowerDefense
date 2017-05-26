@@ -86,7 +86,6 @@ function M.targetEnemies(dt)
                         levelEnded()
                      end
                      gui.gold = gui.gold + creepValue
-                     -- TODO kad umre da iskoci + (gold) iznad njega
                 end
             end
         end
@@ -239,15 +238,18 @@ function M.moveCreeps(dt)
 
             if i.effects["burn"]~=nil then
                 if i.effects["burn"]["duration"] > 0 then
-                    i.effects["burn"]["duration"] = i.effects["burn"]["duration"] - dt -- FIXME: mozda ne bas -1
+                    i.effects["burn"]["duration"] = i.effects["burn"]["duration"] - dt
                     dead = i:inflictDamage(i.effects["burn"]["dot"])
-                    -- TODO prebaci ovo u funkciju, pojavljuje se na 2 mesta
+
                     if dead then
                          M.rows[M.creeps[index].posy][index] = nil
                          M.creeps[index] = nil
                          numCreeps = numCreeps - 1
+                         if numCreeps == 0 then
+                            levelEnded()
+                         end
                          gui.gold = gui.gold + creepValue
-                         -- TODO kad umre da iskoci + (gold) iznad njega
+
                     end
                 end
             end
@@ -264,6 +266,9 @@ function damageBurek(creep,index)
         M.rows[creep.posy] [index] = nil
         M.creeps[index] = nil
         numCreeps = numCreeps - 1
+        if burek.hp <=0 then
+            resetGame()
+        end
         if numCreeps == 0 then
             levelEnded()
         end

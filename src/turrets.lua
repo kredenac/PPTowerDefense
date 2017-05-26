@@ -2,6 +2,7 @@ local M = {}
 
 fireTurretImg = love.graphics.newImage("img/turret.png")
 frostTurretImg = love.graphics.newImage("img/frostTurret.png")
+greenTurretImg = love.graphics.newImage("img/greenTurret.png")
 enemyImg = love.graphics.newImage("img/enemy.png")
 
 M.turret = {}
@@ -40,10 +41,10 @@ M.turret[index].effects["freeze"] = {}
 index = index + 1
 
 M.turret[index] = {}
-M.turret[index].img = fireTurretImg -- split
+M.turret[index].img = greenTurretImg
 M.turret[index].cost = 100
-M.turret[index].dmg = 25
-M.turret[index].cooldown = .25
+M.turret[index].dmg = 45
+M.turret[index].cooldown = .3
 M.turret[index].range = 1
 M.turret[index].targetNum = -1 -- inf
 M.turret[index].rayr = 0

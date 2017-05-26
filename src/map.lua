@@ -225,7 +225,7 @@ function M.draw()
             end
         end
         enemy.drawCreeps(j)
-    end    
+    end
 end
 
 --returning the module

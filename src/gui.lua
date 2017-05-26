@@ -142,9 +142,23 @@ function M.mousePressed(x, y, button)
     --ako je kliknuto na enemy
     if M.selectedTurretType == buttonNum then
         enemy.spawnTimeDelta = 0.4
+        -- function try()--ovo samo da fix da ne moze spam dugme, kad mogu da idu
+    	-- 	astar.calculatePath(creep, 1,19)
+    	-- end
+        astar.init(map, 1, 19)
+        --astar.print()
+        local status, err = pcall(try)
+        --print()
+        --astar.print()
+        --print()
+        if status and map.canBuild then--ovo je retardirano, prvi put udje ovde iako ne treba
+            enemy.spawnCreepWave(totalTime, enemy.waveSize)
+            enemy.updateWaveSize()
+        else
+            --ignore
+            print(("ignoring spawn"))
+        end
 
- 	    enemy.spawnCreepWave(totalTime, enemy.waveSize)
-        enemy.updateWaveSize()
         M.selectedTurretType = 0
     end
 end
