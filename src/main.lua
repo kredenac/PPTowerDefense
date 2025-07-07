@@ -30,7 +30,7 @@ function love.load()
 	defaultCursor = love.graphics.newImage("img/mouse_cursor.png")
 	mouseImg = defaultCursor
 
-	music = love.audio.newSource("img/music.mp3")
+	music = love.audio.newSource("img/music.mp3", "stream")
 	music:play()
 	musicVolume = 0 --da ne slusamo stalno
 	love.audio.setVolume(musicVolume)
